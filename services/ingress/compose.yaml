@@ -2,7 +2,9 @@
 # https://github.com/heyvaldemar/vaultwarden-traefik-letsencrypt-docker-compose
 
 networks:
-  traefik-network:
+  traefik:
+    driver: bridge
+  auth:
     driver: bridge
 
 volumes:
@@ -79,8 +81,8 @@ services:
       - ./traefik_configuration/:/etc/traefik/dynamic
       - traefik-certificates:/etc/traefik/acme
     networks:
-      - traefik-network
-      - oauth2-proxy
+      - traefik
+      - auth
     ports:
       - "80:80"
       - "443:443"

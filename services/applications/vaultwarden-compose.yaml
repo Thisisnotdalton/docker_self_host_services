@@ -1,5 +1,5 @@
 networks:
-  vaultwarden-network:
+  vaultwarden:
     driver: bridge
 
 volumes:
@@ -26,8 +26,8 @@ services:
       SMTP_USERNAME: "${SMTP_USERNAME}"
       SMTP_PASSWORD: "${SMTP_PASSWORD}"
     networks:
-      - vaultwarden-network
-      - traefik-network
+      - vaultwarden
+      - traefik
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/${VAULTWARDEN_ROUTE_PREFIX}"]
       interval: 10s

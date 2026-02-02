@@ -7,4 +7,4 @@ services:
       oauth2-proxy:
         condition: service_healthy
     networks:
-      - traefik-network
+      - traefik

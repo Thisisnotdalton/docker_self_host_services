@@ -1,5 +1,5 @@
 networks:
-  keycloak-network:
+  keycloak:
     driver: bridge
 
 volumes:
@@ -24,7 +24,7 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - keycloak-network
+      - keycloak
 
   keycloak:
     image: ${KEYCLOAK_IMAGE_TAG}
@@ -53,8 +53,8 @@ services:
       traefik:
         condition: service_healthy
     networks:
-      - keycloak-network
-      - traefik-network
+      - keycloak
+      - traefik
     labels:
       # Enable Traefik for this container
       - "traefik.enable=true"
