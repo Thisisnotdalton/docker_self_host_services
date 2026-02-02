@@ -48,7 +48,7 @@ services:
       # Define the internal container port for routing
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
       # Enable TLS on this router
-      - "traefik.http.routers.vaultwarden.tls=${TRAEFIK_TLS_ENABLED}"
+      - "traefik.http.routers.vaultwarden.tls=true"
       # Use Let's Encrypt for certificate management
       - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
       # Pass the original Host header to the container

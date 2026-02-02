@@ -7,9 +7,6 @@ environments:
       - name: DOMAIN
         value: localhost
 
-      - name: TRAEFIK_TLS_ENABLED
-        value: "false"
-
       - name: TRAEFIK_TLS_CA_SERVER
         value: ""
 
