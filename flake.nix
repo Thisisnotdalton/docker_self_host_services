@@ -20,8 +20,12 @@
               pkgs.docker-compose
             ];
             shellHook = ''
-              # Run novops on shell startup
-              novops load -s .envrc && source .envrc
+                echo "Checking Bitwarden status…"
+                bw status --raw | grep -q '"unauthenticated"' && bw login < /dev/tty
+                export BW_SESSION="$(bw unlock --raw < /dev/tty)"
+
+                bw sync
+                novops load -s .envrc && source .envrc
             '';
           };
         };
