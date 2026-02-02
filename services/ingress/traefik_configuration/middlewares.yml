@@ -1,0 +1,23 @@
+http:
+  middlewares:
+    compress-traefik:
+      compress: true
+    append-slash:
+      redirectRegex:
+        regex: "(.+[^/])$"
+        replacement: "${1}/"
+    security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+        customResponseHeaders:
+          server: ""
+          x-powered-by: ""

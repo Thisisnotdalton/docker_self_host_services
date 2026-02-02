@@ -1,0 +1,79 @@
+networks:
+  keycloak-network:
+    driver: bridge
+
+volumes:
+  keycloak_postgres-data:
+    name:  "${HOST}.${DOMAIN}-keycloak_postgres-data"
+
+services:
+  keycloak_postgres:
+    image: ${KEYCLOAK_POSTGRES_IMAGE_TAG}
+    volumes:
+      - keycloak_postgres-data:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: ${KEYCLOAK_POSTGRES_DB}
+      POSTGRES_USER: ${KEYCLOAK_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: "pg_isready -U ${KEYCLOAK_POSTGRES_USER} -d ${KEYCLOAK_POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - keycloak-network
+
+  keycloak:
+    image: ${KEYCLOAK_IMAGE_TAG}
+    command: start
+    environment:
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak_postgres/${KEYCLOAK_POSTGRES_DB}
+      KC_DB_USERNAME: ${KEYCLOAK_POSTGRES_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: "{ printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      keycloak_postgres:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
+    networks:
+      - keycloak-network
+      - traefik-network
+    labels:
+      # Enable Traefik for this container
+      - "traefik.enable=true"
+      # Match incoming requests on a specific hostname
+      - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathRegexp(`^/${KEYCLOAK_ROUTE_PREFIX}/?`)"
+      # Middlewares:
+      # --- MIDDLEWARE: StripPrefix ---
+      - "traefik.http.middlewares.keycloak-stripprefix.stripprefix.prefixes=/${KEYCLOAK_ROUTE_PREFIX}"
+      # Apply middlewares
+      - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file,keycloak-stripprefix"
+      # Assign the router to a named Traefik service
+      - "traefik.http.routers.keycloak.service=keycloak"
+      # Use the 'websecure' (HTTPS) entry point
+      - "traefik.http.routers.keycloak.entrypoints=websecure"
+      # Define the internal container port for routing
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      # Enable TLS on this router
+      - "traefik.http.routers.keycloak.tls=true"
+      # Use Let's Encrypt for certificate management
+      - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
+      # Pass the original Host header to the container
+      - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
