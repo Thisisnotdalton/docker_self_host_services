@@ -17,6 +17,7 @@
             packages = [
               novopsPackage
               pkgs.bitwarden-cli
+              pkgs.docker-compose
             ];
             shellHook = ''
               # Run novops on shell startup
