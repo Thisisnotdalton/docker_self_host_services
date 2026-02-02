@@ -21,6 +21,7 @@
               pkgs.docker-compose
             ];
             shellHook = ''
+                export STAGE=${STAGE}
                 echo "Loading Novops environment for stage: ${STAGE}"
                 export STAGE_DIR="novops/stages/${STAGE}"
                 echo "Checking Bitwarden status…"

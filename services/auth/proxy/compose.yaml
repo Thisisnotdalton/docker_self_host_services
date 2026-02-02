@@ -20,7 +20,7 @@ services:
       # Enable TLS on this router
       - "traefik.http.routers.oauth2-proxy.tls=true"
       # Use Let's Encrypt for TLS management
-      - "traefik.http.routers.oauth2-proxy.tls.certresolver=letsencrypt"
+#      - "traefik.http.routers.oauth2-proxy.tls.certresolver=letsencrypt"
       # Apply middlewares
       - "traefik.http.routers.oauth2-proxy.middlewares=compress-traefik@file,security-headers@file"
       # Define middlewares for oauth apps

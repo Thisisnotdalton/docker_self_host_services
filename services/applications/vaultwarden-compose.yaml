@@ -50,6 +50,6 @@ services:
       # Enable TLS on this router
       - "traefik.http.routers.vaultwarden.tls=true"
       # Use Let's Encrypt for certificate management
-      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+#      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
       # Pass the original Host header to the container
       - "traefik.http.services.vaultwarden.loadbalancer.passhostheader=true"

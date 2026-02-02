@@ -7,11 +7,8 @@ environments:
       - name: DOMAIN
         value: pukiru.online
 
-      - name: TRAEFIK_TLS_ENABLED
-        value: "true"
-
       - name: TRAEFIK_TLS_CA_SERVER
-        value: "https://acme-v02.api.letsencrypt.org/directory"
+        value: ""
 
       - name: TRAEFIK_IMAGE_TAG
         value: "traefik:v3.6.7"

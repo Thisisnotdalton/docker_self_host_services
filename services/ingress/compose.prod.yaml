@@ -1,0 +1,67 @@
+# Configuration largely adapted from:
+# https://github.com/heyvaldemar/vaultwarden-traefik-letsencrypt-docker-compose
+
+networks:
+  traefik:
+    driver: bridge
+  auth:
+    driver: bridge
+
+volumes:
+  traefik-certificates:
+    name: "${HOST}.${DOMAIN}-traefik_certs"
+
+services:
+  traefik:
+    command:
+      # Set the log level (DEBUG, INFO, WARN, ERROR)
+      - "--log.level=${TRAEFIK_LOG_LEVEL}"
+      # Enable the built-in API and web-based dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      # Enable the /ping endpoint so we can health-check Traefik
+      - "--ping=true"
+      # Assign the /ping endpoint to a dedicated entry point on port 8082
+      - "--ping.entrypoint=ping"
+      - "--entrypoints.ping.address=:8082"
+      # Define the primary HTTP entry point on port 80
+      - "--entrypoints.web.address=:80"
+      # Define the secure (HTTPS) entry point on port 443
+      - "--entrypoints.websecure.address=:443"
+      # HTTP -> HTTPS redirect at entrypoint level
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Enable watching mounted volume for dynamic configuration
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+      # Enable the Docker provider to detect containers and their labels
+      - "--providers.docker=true"
+      # Point Traefik to the Docker socket
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      # Prevent automatic exposure of all containers; only expose containers
+      # with "traefik.enable=true"
+      - "--providers.docker.exposedbydefault=false"
+      # The file where ACME certificates are stored inside the container
+      - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
+      # Use ACME (Let's Encrypt) to generate/renew certificates via DNS challenge
+      - "--certificatesresolvers.letsencrypt.acme.caServer='https://acme-v02.api.letsencrypt.org/directory'"
+      - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.propagation.delayBeforeChecks=5"
+      # The email address used by Let's Encrypt for renewal notices
+      - "--certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL}"
+      # Enable Prometheus metrics
+      - "--metrics.prometheus=true"
+      # Configure Prometheus histogram buckets
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+      # Check for newer Traefik versions and optionally log that info
+      - "--global.checknewversion=true"
+      # Disable sending anonymous usage data to the Traefik maintainers
+      - "--global.sendanonymoususage=false"
+    labels:
+      - "traefik.http.routers.dashboard.tls.certresolver='${TRAEFIK_CERT_RESOLVER}'"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik_configuration/:/etc/traefik/dynamic
+      - traefik-certificates:/etc/traefik/acme
+    environment:
+      CF_DNS_API_TOKEN: "${TRAEFIK_ACME_dns_api_secret}"
