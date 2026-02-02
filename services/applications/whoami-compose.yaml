@@ -12,6 +12,6 @@ services:
       # Apply middlewares
       - "traefik.http.routers.whoami.middlewares=compress-traefik@file,oauth-auth,oauth-errors,security-headers@file"
       # Enable TLS on this router
-      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls=${TRAEFIK_TLS_ENABLED}"
       # Use Let's Encrypt for TLS management
       - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"

@@ -18,7 +18,7 @@ services:
       # Define the internal container port for routing
       - "traefik.http.services.oauth2-proxy.loadbalancer.server.port=4180"
       # Enable TLS on this router
-      - "traefik.http.routers.oauth2-proxy.tls=true"
+      - "traefik.http.routers.oauth2-proxy.tls=${TRAEFIK_TLS_ENABLED}"
       # Use Let's Encrypt for TLS management
       - "traefik.http.routers.oauth2-proxy.tls.certresolver=letsencrypt"
       # Apply middlewares
