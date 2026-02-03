@@ -62,15 +62,17 @@ services:
       - "traefik.enable=true"
       # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
       - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
       - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
       - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file"
       - "traefik.http.routers.keycloak.service=keycloak"
-      # Use the 'websecure' (HTTPS) entry point
       - "traefik.http.routers.keycloak.entrypoints=websecure"
-      # Define the internal container port for routing
-      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
-      # Enable TLS on this router
       - "traefik.http.routers.keycloak.tls=true"
-      # Pass the original Host header to the container
-      - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
-      - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.services.keycloak_health.loadbalancer.server.port=9000"
+      - "traefik.http.services.keycloak_health.loadbalancer.passhostheader=true"
+      - "traefik.http.routers.keycloak_health.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/health`)"
+      - "traefik.http.routers.keycloak_health.middlewares=compress-traefik@file,security-headers@file"
+      - "traefik.http.routers.keycloak_health.service=keycloak_health"
+      - "traefik.http.routers.keycloak_health.entrypoints=websecure"
+      - "traefik.http.routers.keycloak_health.tls=true"
