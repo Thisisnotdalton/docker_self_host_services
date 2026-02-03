@@ -3,6 +3,10 @@ environments:
     variables:
       - name: CURL_TLS_FLAGS
         value: ''
+
+      - name: TRAEFIK_LOG_LEVEL
+        value: WARN
+
   dev:
     variables:
       - name: HOST
@@ -14,7 +18,7 @@ environments:
         value: "traefik:v3.6.7"
 
       - name: TRAEFIK_LOG_LEVEL
-        value: WARN
+        value: DEBUG
 
       - name: TRAEFIK_ACME_EMAIL
         value: dalton@pukiru.games
