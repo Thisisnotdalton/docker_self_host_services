@@ -32,6 +32,8 @@ DC_APPS = docker compose \
 # Option B: run tofu directly as a container (fill in image/mounts as you implement it)
 TOFU ?= echo "TOFU runner not configured. Set TOFU=... (see Makefile) && false"
 
+WAIT_KEYCLOAK_SCRIPT ?= $(CURDIR)/services/auth/identity/wait_for_keycloak.sh
+
 # ---------- targets ----------
 .PHONY: deploy up up-core up-apps wait-keycloak tofu-apply down destroy restart logs logs-core logs-apps
 
@@ -46,7 +48,7 @@ up-core:
 	$(DC_CORE) up -d
 
 wait-keycloak:
-	./services/auth/identity/wait_for_keycloak.sh
+	bash "$(WAIT_KEYCLOAK_SCRIPT)"
 
 # Phase 2: apply Keycloak configuration (realm/clients) using OpenTofu
 tofu-apply: wait-keycloak

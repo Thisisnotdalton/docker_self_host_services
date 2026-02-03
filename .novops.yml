@@ -1,4 +1,8 @@
 environments:
+  prod:
+    variables:
+      - name: CURL_TLS_FLAGS
+        value: ''
   dev:
     variables:
       - name: HOST
