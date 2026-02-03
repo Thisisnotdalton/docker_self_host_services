@@ -60,25 +60,18 @@ services:
       - "traefik.enable=true"
       # Match incoming requests on a specific hostname
       - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
-      - "traefik.http.routers.keycloak_health.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/health`)"
       # Middlewares:
       # --- MIDDLEWARE: StripPrefix ---
       - "traefik.http.middlewares.keycloak-stripprefix.stripprefix.prefixes=/${KEYCLOAK_ROUTE_PREFIX}"
       # Apply middlewares
       - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file,keycloak-stripprefix"
-      - "traefik.http.routers.keycloak_health.middlewares=compress-traefik@file,security-headers@file,keycloak-stripprefix"
       # Assign the router to a named Traefik service
       - "traefik.http.routers.keycloak.service=keycloak"
-      - "traefik.http.routers.keycloak_health.service=keycloak"
       # Use the 'websecure' (HTTPS) entry point
       - "traefik.http.routers.keycloak.entrypoints=websecure"
-      - "traefik.http.routers.keycloak_health.entrypoints=websecure"
       # Define the internal container port for routing
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
-      - "traefik.http.services.keycloak_health.loadbalancer.server.port=9000"
       # Enable TLS on this router
-      - "traefik.http.routers.keycloak.tls=true"
-      - "traefik.http.routers.keycloak_health.tls=true"
+#      - "traefik.http.routers.keycloak.tls=true"
       # Pass the original Host header to the container
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
-      - "traefik.http.services.keycloak_health.loadbalancer.passhostheader=true"
