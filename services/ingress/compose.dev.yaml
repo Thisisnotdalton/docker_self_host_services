@@ -13,7 +13,6 @@ volumes:
 
 services:
   traefik:
-    image: ${TRAEFIK_IMAGE_TAG}
     command:
       # Set the log level (DEBUG, INFO, WARN, ERROR)
       - "--log.level=${TRAEFIK_LOG_LEVEL}"

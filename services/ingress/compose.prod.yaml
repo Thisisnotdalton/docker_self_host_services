@@ -57,11 +57,3 @@ services:
       - "--global.checknewversion=true"
       # Disable sending anonymous usage data to the Traefik maintainers
       - "--global.sendanonymoususage=false"
-    labels:
-      - "traefik.http.routers.dashboard.tls.certresolver='${TRAEFIK_CERT_RESOLVER}'"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik_configuration/:/etc/traefik/dynamic
-      - traefik-certificates:/etc/traefik/acme
-    environment:
-      CF_DNS_API_TOKEN: "${TRAEFIK_ACME_dns_api_secret}"

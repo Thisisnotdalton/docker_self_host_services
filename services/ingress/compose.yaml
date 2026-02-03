@@ -31,6 +31,8 @@ services:
       - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
       # Pass the original Host header to the backend
       - "traefik.http.services.dashboard.loadbalancer.passhostheader=true"
+    environment:
+      CF_DNS_API_TOKEN: "${TRAEFIK_ACME_dns_api_secret}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik_configuration/:/etc/traefik/dynamic
