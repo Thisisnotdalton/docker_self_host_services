@@ -33,19 +33,23 @@ DC_APPS = docker compose \
 TOFU ?= echo "TOFU runner not configured. Set TOFU=... (see Makefile) && false"
 
 # ---------- targets ----------
-.PHONY: deploy up up-core up-apps tofu-apply down destroy restart logs logs-core logs-apps
+.PHONY: deploy up up-core up-apps wait-keycloak tofu-apply down destroy restart logs logs-core logs-apps
 
 # Full 3-phase deployment
 deploy: up-core tofu-apply up-apps
 
+# Backwards-compatible: keep `up` as the full deploy
 up: deploy
 
 # Phase 1: bring up only the core services (traefik/keycloak/etc.)
 up-core:
 	$(DC_CORE) up -d
 
+wait-keycloak:
+	./services/auth/identity/wait_for_keycloak.sh
+
 # Phase 2: apply Keycloak configuration (realm/clients) using OpenTofu
-tofu-apply:
+tofu-apply: wait-keycloak
 	$(TOFU)
 
 # Phase 3: bring up services that depend on Keycloak resources (oauth2-proxy/apps)
