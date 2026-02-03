@@ -3,6 +3,7 @@
 
 networks:
   traefik:
+    name: "${HOST}.${DOMAIN}-traefik"
     driver: bridge
   auth:
     driver: bridge

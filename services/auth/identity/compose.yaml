@@ -61,7 +61,7 @@ services:
       # Enable Traefik for this container
       - "traefik.enable=true"
       # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
-      - "traefik.docker.network=traefik"
+      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
       - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
       - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file"
       - "traefik.http.routers.keycloak.service=keycloak"
