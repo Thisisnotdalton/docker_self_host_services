@@ -35,44 +35,41 @@ TOFU ?= echo "TOFU runner not configured. Set TOFU=... (see Makefile) && false"
 WAIT_KEYCLOAK_SCRIPT ?= $(CURDIR)/services/auth/identity/wait_for_keycloak.sh
 
 # ---------- targets ----------
-.PHONY: deploy up up-core up-apps wait-keycloak tofu-apply down destroy restart logs logs-core logs-apps
+.PHONY: help deploy up up-core up-apps wait-keycloak tofu-apply down destroy restart logs logs-core logs-apps
 
-# Full 3-phase deployment
-deploy: up-core tofu-apply up-apps
+help: ## Show available targets
+	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
-# Backwards-compatible: keep `up` as the full deploy
-up: deploy
-
-# Phase 1: bring up only the core services (traefik/keycloak/etc.)
-up-core:
+deploy: up-core tofu-apply up-apps ## Phase 1 -> 2 -> 3 deployment
+up: deploy ## Alias for deploy
+up-core: ## Phase 1: start core services (traefik/keycloak/etc.)
 	$(DC_CORE) up -d
 
-wait-keycloak:
+wait-keycloak: ## Wait until Keycloak is reachable/ready
+	test -f "$(WAIT_KEYCLOAK_SCRIPT)"
 	bash "$(WAIT_KEYCLOAK_SCRIPT)"
 
-# Phase 2: apply Keycloak configuration (realm/clients) using OpenTofu
-tofu-apply: wait-keycloak
+tofu-apply: wait-keycloak ## Phase 2: apply Keycloak resources with OpenTofu
 	$(TOFU)
 
-# Phase 3: bring up services that depend on Keycloak resources (oauth2-proxy/apps)
-up-apps:
+up-apps: ## Phase 3: start services that depend on Keycloak resources
 	$(DC_APPS) up -d
 
-down:
+down: ## Stop containers
 	$(DC_APPS) down
 
-destroy:
+destroy: ## Stop containers and remove volumes
 	$(DC_APPS) down -v
 
-restart:
+restart: ## Restart full stack (down + deploy)
 	$(MAKE) down
 	$(MAKE) deploy
 
-logs:
+logs: ## Follow logs for full stack
 	$(DC_APPS) logs -f
 
-logs-core:
+logs-core: ## Follow logs for core services only
 	$(DC_CORE) logs -f
 
-logs-apps:
+logs-apps: ## Follow logs for apps/services only
 	$(DC_APPS) logs -f
