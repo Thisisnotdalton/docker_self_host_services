@@ -1,12 +1,6 @@
 # Configuration largely adapted from:
 # https://github.com/heyvaldemar/vaultwarden-traefik-letsencrypt-docker-compose
 
-networks:
-  traefik:
-    driver: bridge
-  auth:
-    driver: bridge
-
 volumes:
   traefik-certificates:
     name: "${HOST}.${DOMAIN}-traefik_certs"
