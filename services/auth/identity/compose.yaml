@@ -60,9 +60,9 @@ services:
     labels:
       # Enable Traefik for this container
       - "traefik.enable=true"
-      # Match incoming requests on a specific hostname
+      # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
+      - "traefik.docker.network=traefik"
       - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
-      # Remove StripPrefix if Keycloak is configured with KC_HTTP_RELATIVE_PATH=/auth
       - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file"
       - "traefik.http.routers.keycloak.service=keycloak"
       # Use the 'websecure' (HTTPS) entry point
