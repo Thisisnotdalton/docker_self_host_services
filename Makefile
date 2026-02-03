@@ -19,7 +19,8 @@ endif
 # ---------- docker compose ----------
 DC = docker compose \
   -f docker-compose.yml \
-  -f $(COMPOSE_STAGE_FILE)
+  -f $(COMPOSE_STAGE_FILE) \
+  -f docker-compose.applications.yml
 
 # ---------- targets ----------
 .PHONY: up down destroy restart logs
