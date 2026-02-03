@@ -56,10 +56,10 @@ up-apps: ## Phase 3: start services that depend on Keycloak resources
 	$(DC_APPS) up -d
 
 down: ## Stop containers
-	$(DC_APPS) down
+	$(DC_APPS) down --remove-orphans
 
 destroy: ## Stop containers and remove volumes
-	$(DC_APPS) down -v
+	$(DC_APPS) down -v --remove-orphans
 
 restart: ## Restart full stack (down + deploy)
 	$(MAKE) down
