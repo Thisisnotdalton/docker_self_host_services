@@ -31,7 +31,9 @@ services:
     command: start
     environment:
       KC_PROXY_HEADERS: xforwarded
-      KC_HOSTNAME: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"
+      KC_PROXY: edge
+      KC_HOSTNAME: "${HOST}.${DOMAIN}"
+      KC_HTTP_RELATIVE_PATH: "/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
@@ -42,7 +44,7 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
     restart: unless-stopped
     healthcheck:
-      test: "{ printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"
+      test: "{ printf 'HEAD /${KEYCLOAK_ROUTE_PREFIX}/health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"
       interval: 10s
       timeout: 5s
       retries: 3
@@ -60,12 +62,8 @@ services:
       - "traefik.enable=true"
       # Match incoming requests on a specific hostname
       - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
-      # Middlewares:
-      # --- MIDDLEWARE: StripPrefix ---
-      - "traefik.http.middlewares.keycloak-stripprefix.stripprefix.prefixes=/${KEYCLOAK_ROUTE_PREFIX}"
-      # Apply middlewares
-      - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file,keycloak-stripprefix"
-      # Assign the router to a named Traefik service
+      # Remove StripPrefix if Keycloak is configured with KC_HTTP_RELATIVE_PATH=/auth
+      - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file"
       - "traefik.http.routers.keycloak.service=keycloak"
       # Use the 'websecure' (HTTPS) entry point
       - "traefik.http.routers.keycloak.entrypoints=websecure"
