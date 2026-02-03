@@ -1,6 +1,6 @@
 # ---------- required environment ----------
 ifndef STAGE
-$(error STAGE environment variable is not set. Example: STAGE=dev make up)
+$(error STAGE environment variable is not set. Example: STAGE=dev make deploy)
 endif
 
 # ---------- validation ----------
@@ -17,26 +17,56 @@ $(error Missing $(COMPOSE_STAGE_FILE))
 endif
 
 # ---------- docker compose ----------
-DC = docker compose \
+DC_CORE = docker compose \
+  -f docker-compose.yml \
+  -f $(COMPOSE_STAGE_FILE)
+
+DC_APPS = docker compose \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE) \
   -f docker-compose.applications.yml
 
-# ---------- targets ----------
-.PHONY: up down destroy restart logs
+# ---------- OpenTofu ----------
+# Option A (recommended): run tofu via a dedicated compose service (e.g., in docker-compose.tofu.yml)
+#   TOFU = docker compose -f docker-compose.tofu.yml -f $(COMPOSE_STAGE_FILE) run --rm tofu
+# Option B: run tofu directly as a container (fill in image/mounts as you implement it)
+TOFU ?= echo "TOFU runner not configured. Set TOFU=... (see Makefile) && false"
 
-up:
-	$(DC) up -d
+# ---------- targets ----------
+.PHONY: deploy up up-core up-apps tofu-apply down destroy restart logs logs-core logs-apps
+
+# Full 3-phase deployment
+deploy: up-core tofu-apply up-apps
+
+up: deploy
+
+# Phase 1: bring up only the core services (traefik/keycloak/etc.)
+up-core:
+	$(DC_CORE) up -d
+
+# Phase 2: apply Keycloak configuration (realm/clients) using OpenTofu
+tofu-apply:
+	$(TOFU)
+
+# Phase 3: bring up services that depend on Keycloak resources (oauth2-proxy/apps)
+up-apps:
+	$(DC_APPS) up -d
 
 down:
-	$(DC) down
+	$(DC_APPS) down
 
 destroy:
-	$(DC) down -v
+	$(DC_APPS) down -v
 
 restart:
-	$(DC) down
-	$(DC) up -d
+	$(MAKE) down
+	$(MAKE) deploy
 
 logs:
-	$(DC) logs -f
+	$(DC_APPS) logs -f
+
+logs-core:
+	$(DC_CORE) logs -f
+
+logs-apps:
+	$(DC_APPS) logs -f
