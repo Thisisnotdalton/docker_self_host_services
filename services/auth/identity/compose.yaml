@@ -72,6 +72,6 @@ services:
       # Define the internal container port for routing
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       # Enable TLS on this router
-#      - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.routers.keycloak.tls=true"
       # Pass the original Host header to the container
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
