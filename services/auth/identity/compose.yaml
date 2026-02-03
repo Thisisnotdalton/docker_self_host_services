@@ -32,7 +32,7 @@ services:
     environment:
       KC_PROXY_HEADERS: xforwarded
       KC_PROXY: edge
-      KC_HOSTNAME: "${HOST}.${DOMAIN}"
+      KC_HOSTNAME_STRICT: "false"
       KC_HTTP_RELATIVE_PATH: "/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
@@ -73,3 +73,4 @@ services:
       - "traefik.http.routers.keycloak.tls=true"
       # Pass the original Host header to the container
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
+      - "traefik.http.routers.keycloak.tls=true"
