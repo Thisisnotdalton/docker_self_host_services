@@ -7,26 +7,11 @@ environments:
       - name: DOMAIN
         value: pukiru.online
 
-      - name: TRAEFIK_TLS_CA_SERVER
-        value: ""
-
       - name: TRAEFIK_IMAGE_TAG
         value: "traefik:v3.6.7"
 
       - name: TRAEFIK_LOG_LEVEL
         value: WARN
-
-      - name: TRAEFIK_ACME_EMAIL
-        value: dalton@pukiru.games
-
-      - name: TRAEFIK_BASIC_AUTH
-        value: "test:$2y$10$leXJg98mfBd6W4.oZ76xd.0OFkLIb3nEYFwZoR.Oj//iUHEw9I15G"
-
-      - name: TRAEFIK_ACME_dns_api_secret
-        value:
-          bitwarden:
-            entry: pukiru-online-cloudflare_dns_secret
-            field: login.password
 
       - name: TRAEFIK_DASHBOARD_ROUTE_PREFIX
         value: traefik
@@ -45,3 +30,13 @@ environments:
           bitwarden:
             entry: pukiru-online-oauth2_proxy_client_secret
             field: login.password
+
+      - name: TRAEFIK_ACME_EMAIL
+        value: dalton@pukiru.games
+
+      - name: TRAEFIK_ACME_dns_api_secret
+        value:
+          bitwarden:
+            entry: pukiru-online-cloudflare_dns_secret
+            field: login.password
+

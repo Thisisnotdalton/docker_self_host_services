@@ -7,17 +7,11 @@ environments:
       - name: DOMAIN
         value: localhost
 
-      - name: TRAEFIK_TLS_CA_SERVER
-        value: ""
-
       - name: TRAEFIK_IMAGE_TAG
         value: "traefik:v3.6.7"
 
       - name: TRAEFIK_LOG_LEVEL
         value: INFO
-
-      - name: TRAEFIK_BASIC_AUTH
-        value: "test:$2y$10$leXJg98mfBd6W4.oZ76xd.0OFkLIb3nEYFwZoR.Oj//iUHEw9I15G"
 
       - name: TRAEFIK_DASHBOARD_ROUTE_PREFIX
         value: traefik
