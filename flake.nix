@@ -6,7 +6,6 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        STAGE = let s = builtins.getEnv "STAGE"; in if s == "" then "dev" else s;
       in {
         devShells = {
           default = pkgs.mkShell {
@@ -17,16 +16,18 @@
               pkgs.jq
             ];
             shellHook = ''
-                export STAGE=${STAGE}
-                echo "Loading Novops environment for stage: ${STAGE}"
-                export STAGE_DIR="novops/stages/${STAGE}"
+                : "''${STAGE:=dev}"
+                export STAGE
+                echo "Loading Novops environment for stage: ''${STAGE}"
+
+                export STAGE_DIR="novops/stages/$STAGE"
                 echo "Checking Bitwarden status…"
                 bw status --raw | grep -q '"unauthenticated"' && bw login < /dev/tty
                 export BW_SESSION="$(bw unlock --raw < /dev/tty)"
                 bw sync
                 if [ -d "$STAGE_DIR" ]; then
                     for f in "$STAGE_DIR"/*.yml; do
-                        source <(novops load -c $f -e ${STAGE})
+                        source <(novops load -c "$f" -e "$STAGE")
                     done
                 else
                     echo "Stage directory not found: $STAGE_DIR"
