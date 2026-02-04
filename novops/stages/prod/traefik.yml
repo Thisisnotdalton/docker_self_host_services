@@ -1,17 +1,17 @@
 environments:
-  dev:
+  prod:
     variables:
       - name: HOST
         value: docker
 
       - name: DOMAIN
-        value: localhost
+        value: pukiru.online
 
       - name: TRAEFIK_IMAGE_TAG
         value: "traefik:v3.6.7"
 
       - name: TRAEFIK_LOG_LEVEL
-        value: INFO
+        value: WARN
 
       - name: TRAEFIK_DASHBOARD_ROUTE_PREFIX
         value: traefik
@@ -30,3 +30,13 @@ environments:
           bitwarden:
             entry: pukiru-online-oauth2_proxy_client_secret
             field: login.password
+
+      - name: TRAEFIK_ACME_EMAIL
+        value: dalton@pukiru.games
+
+      - name: TRAEFIK_ACME_dns_api_secret
+        value:
+          bitwarden:
+            entry: pukiru-online-cloudflare_dns_secret
+            field: login.password
+

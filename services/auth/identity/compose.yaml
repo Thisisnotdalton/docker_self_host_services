@@ -1,5 +1,5 @@
 networks:
-  keycloak-network:
+  keycloak:
     driver: bridge
 
 volumes:
@@ -24,14 +24,16 @@ services:
       retries: 3
       start_period: 30s
     networks:
-      - keycloak-network
+      - keycloak
 
   keycloak:
     image: ${KEYCLOAK_IMAGE_TAG}
     command: start
     environment:
       KC_PROXY_HEADERS: xforwarded
-      KC_HOSTNAME: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"
+      KC_PROXY: edge
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_RELATIVE_PATH: "/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
@@ -42,7 +44,7 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
     restart: unless-stopped
     healthcheck:
-      test: "{ printf 'HEAD /health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"
+      test: "{ printf 'HEAD /${KEYCLOAK_ROUTE_PREFIX}/health/ready HTTP/1.0\r\n\r\n' >&0; grep 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/9000"
       interval: 10s
       timeout: 5s
       retries: 3
@@ -53,27 +55,24 @@ services:
       traefik:
         condition: service_healthy
     networks:
-      - keycloak-network
-      - traefik-network
+      - keycloak
+      - traefik
     labels:
       # Enable Traefik for this container
       - "traefik.enable=true"
-      # Match incoming requests on a specific hostname
-      - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathRegexp(`^/${KEYCLOAK_ROUTE_PREFIX}/?`)"
-      # Middlewares:
-      # --- MIDDLEWARE: StripPrefix ---
-      - "traefik.http.middlewares.keycloak-stripprefix.stripprefix.prefixes=/${KEYCLOAK_ROUTE_PREFIX}"
-      # Apply middlewares
-      - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file,keycloak-stripprefix"
-      # Assign the router to a named Traefik service
-      - "traefik.http.routers.keycloak.service=keycloak"
-      # Use the 'websecure' (HTTPS) entry point
-      - "traefik.http.routers.keycloak.entrypoints=websecure"
-      # Define the internal container port for routing
+      # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
+      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
-      # Enable TLS on this router
-      - "traefik.http.routers.keycloak.tls=true"
-      # Use Let's Encrypt for certificate management
-      - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
-      # Pass the original Host header to the container
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
+      - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
+      - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file"
+      - "traefik.http.routers.keycloak.service=keycloak"
+      - "traefik.http.routers.keycloak.entrypoints=websecure"
+      - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.services.keycloak_health.loadbalancer.server.port=9000"
+      - "traefik.http.services.keycloak_health.loadbalancer.passhostheader=true"
+      - "traefik.http.routers.keycloak_health.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/health`)"
+      - "traefik.http.routers.keycloak_health.middlewares=compress-traefik@file,security-headers@file"
+      - "traefik.http.routers.keycloak_health.service=keycloak_health"
+      - "traefik.http.routers.keycloak_health.entrypoints=websecure"
+      - "traefik.http.routers.keycloak_health.tls=true"
