@@ -12,26 +12,3 @@ environments:
 
       - name: VAULTWARDEN_ROUTE_PREFIX
         value: vault
-      - name: SMTP_HOST
-        value: mail.smtp2go.com
-
-      - name: SMTP_PORT
-        value: "2525"
-
-      - name: SMTP_SECURITY
-        value: starttls
-
-      - name: VAULTWARDEN_SMTP_FROM
-        value: vault@pukiru.online
-
-      - name: SMTP_USERNAME
-        value:
-          bitwarden:
-            entry: pukiru-online-smtp2go
-            field: login.username
-
-      - name: SMTP_PASSWORD
-        value:
-          bitwarden:
-            entry: pukiru-online-smtp2go
-            field: login.password

@@ -14,8 +14,8 @@ services:
       TF_VAR_smtp_port: ${SMTP_PORT}
       TF_VAR_smtp_username: ${SMTP_USERNAME}
       TF_VAR_smtp_password: ${SMTP_PASSWORD}
-      TF_VAR_smtp_from_email: ${SMTP_FROM_EMAIL}
-      TF_VAR_smtp_from_name: ${SMTP_FROM_NAME}
+      TF_VAR_smtp_from_email: "keycloak@${SMTP_FROM_EMAIL_DOMAIN}"
+      TF_VAR_smtp_from_name: "Keycloak"
       TF_VAR_state_encryption_passphrase: ${tofu_state_encryption_passphrase}
     networks:
       - keycloak
