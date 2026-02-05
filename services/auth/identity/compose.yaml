@@ -68,6 +68,17 @@ services:
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
 
+      # --- FRIENDLY LOGIN ROUTE (${HOST}.${DOMAIN}/login) ---
+      - "traefik.http.middlewares.keycloak_login_redirect.redirectregex.regex=^https?://${HOST}.${DOMAIN}/login/?$"
+      - "traefik.http.middlewares.keycloak_login_redirect.redirectregex.replacement=https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}/account/"
+      - "traefik.http.middlewares.keycloak_login_redirect.redirectregex.permanent=true"
+
+      - "traefik.http.routers.keycloak_login.rule=Host(`${HOST}.${DOMAIN}`) && (Path(`/login`) || Path(`/login/`))"
+      - "traefik.http.routers.keycloak_login.middlewares=keycloak_login_redirect,compress-traefik@file,security-headers@file"
+      - "traefik.http.routers.keycloak_login.service=keycloak"
+      - "traefik.http.routers.keycloak_login.entrypoints=websecure"
+      - "traefik.http.routers.keycloak_login.tls=true"
+
       # --- PUBLIC REALM ROUTER (host: ${HOST}.${DOMAIN}, path-based) ---
       # Only expose the OpenTofu-managed realm + shared static resources.
       # This prevents routing to /realms/master/* (and avoids exposing /admin/*).
