@@ -1,0 +1,33 @@
+services:
+  keycloak_tofu_apply:
+    build: ./keycloak_configuration_tofu
+    working_dir: /work
+    volumes:
+      - tofu_state:/work
+    environment:
+      TF_VAR_keycloak_url: ${KEYCLOAK_URL:-http://keycloak:8080}
+      TF_VAR_keycloak_username: ${KEYCLOAK_ADMIN}
+      TF_VAR_keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD}
+      TF_VAR_keycloak_realm: ${DOMAIN}
+      TF_VAR_registration_allowed: ${REGISTRATION_ALLOWED:-true}
+      TF_VAR_smtp_host: ${SMTP_HOST}
+      TF_VAR_smtp_port: ${SMTP_PORT}
+      TF_VAR_smtp_username: ${SMTP_USERNAME}
+      TF_VAR_smtp_password: ${SMTP_PASSWORD}
+      TF_VAR_smtp_from_email: ${SMTP_FROM_EMAIL}
+      TF_VAR_smtp_from_name: ${SMTP_FROM_NAME}
+      TF_VAR_state_encryption_passphrase: ${tofu_state_encryption_passphrase}
+    networks:
+      - keycloak
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    command: >
+      sh -lc "
+        cp -a /tofu_modules/. /work/ &&
+        tofu -chdir=/work init -input=false &&
+        tofu -chdir=/work apply -auto-approve -input=false
+      "
+    restart: "no"
+volumes:
+  tofu_state:
