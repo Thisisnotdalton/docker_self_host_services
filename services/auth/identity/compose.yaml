@@ -5,7 +5,8 @@ networks:
 volumes:
   keycloak_postgres-data:
     name:  "${HOST}.${DOMAIN}-keycloak_postgres-data"
-
+include:
+  - compose.tofu_apply.yaml
 services:
   keycloak_postgres:
     image: ${KEYCLOAK_POSTGRES_IMAGE_TAG}
@@ -27,6 +28,7 @@ services:
       - keycloak
 
   keycloak:
+    hostname: keycloak
     image: ${KEYCLOAK_IMAGE_TAG}
     command: start
     environment:

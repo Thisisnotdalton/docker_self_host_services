@@ -1,5 +1,6 @@
 resource "keycloak_realm" "realm" {
   realm                          = var.keycloak_realm
+  display_name                   = "${var.keycloak_realm} Users"
   registration_allowed           = var.registration_allowed
   verify_email                   = true
   registration_email_as_username = true

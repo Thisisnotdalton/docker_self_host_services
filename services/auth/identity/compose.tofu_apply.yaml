@@ -5,7 +5,7 @@ services:
     volumes:
       - tofu_state:/work
     environment:
-      TF_VAR_keycloak_url: ${KEYCLOAK_URL:-http://keycloak:8080}
+      TF_VAR_keycloak_url: ${KEYCLOAK_URL:-http://keycloak:8080/auth}
       TF_VAR_keycloak_username: ${KEYCLOAK_ADMIN}
       TF_VAR_keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD}
       TF_VAR_keycloak_realm: ${DOMAIN}

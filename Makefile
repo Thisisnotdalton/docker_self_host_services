@@ -26,21 +26,15 @@ DC_APPS = docker compose \
   -f $(COMPOSE_STAGE_FILE) \
   -f docker-compose.applications.yml
 
-# ---------- OpenTofu ----------
-# Option A (recommended): run tofu via a dedicated compose service (e.g., in docker-compose.tofu.yml)
-#   TOFU = docker compose -f docker-compose.tofu.yml -f $(COMPOSE_STAGE_FILE) run --rm tofu
-# Option B: run tofu directly as a container (fill in image/mounts as you implement it)
-TOFU ?= echo "TOFU runner not configured. Set TOFU=... (see Makefile) && false"
-
 WAIT_KEYCLOAK_SCRIPT ?= $(CURDIR)/services/auth/identity/wait_for_keycloak.sh
 
 # ---------- targets ----------
-.PHONY: help deploy up up-core up-apps wait-keycloak tofu-apply down destroy restart logs logs-core logs-apps
+.PHONY: help deploy up up-core up-apps wait-keycloak down destroy restart logs logs-core logs-apps
 
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
-deploy: up-core tofu-apply up-apps ## Phase 1 -> 2 -> 3 deployment
+deploy: up-core wait-keycloak up-apps ## Phase 1 -> 2 -> 3 deployment
 up: deploy ## Alias for deploy
 up-core: ## Phase 1: start core services (traefik/keycloak/etc.)
 	$(DC_CORE) up -d
@@ -48,9 +42,6 @@ up-core: ## Phase 1: start core services (traefik/keycloak/etc.)
 wait-keycloak: ## Wait until Keycloak is reachable/ready
 	test -f "$(WAIT_KEYCLOAK_SCRIPT)"
 	bash "$(WAIT_KEYCLOAK_SCRIPT)"
-
-tofu-apply: wait-keycloak ## Phase 2: apply Keycloak resources with OpenTofu
-	$(TOFU)
 
 up-apps: ## Phase 3: start services that depend on Keycloak resources
 	$(DC_APPS) up -d
@@ -64,6 +55,11 @@ destroy: ## Stop containers and remove volumes
 restart: ## Restart full stack (down + deploy)
 	$(MAKE) down
 	$(MAKE) deploy
+
+images:  ## Rebuild all images
+	$(DC_APPS) build
+
+remake: destroy images up ## Completely remake the stack
 
 logs: ## Follow logs for full stack
 	$(DC_APPS) logs -f
