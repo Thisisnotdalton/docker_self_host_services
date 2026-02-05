@@ -37,5 +37,5 @@ environments:
       - name: KEYCLOAK_ROUTE_PREFIX
         value: auth
 
-      - name: KEYCLOAK_REALM_NAME
+      - name: KEYCLOAK_REALM
         value: pukiru_online

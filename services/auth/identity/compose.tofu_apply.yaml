@@ -8,7 +8,7 @@ services:
       TF_VAR_keycloak_url: ${KEYCLOAK_URL:-http://keycloak:8080/auth}
       TF_VAR_keycloak_username: ${KEYCLOAK_ADMIN}
       TF_VAR_keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD}
-      TF_VAR_keycloak_realm: ${DOMAIN}
+      TF_VAR_keycloak_realm: ${KEYCLOAK_REALM}
       TF_VAR_registration_allowed: ${REGISTRATION_ALLOWED:-true}
       TF_VAR_smtp_host: ${SMTP_HOST}
       TF_VAR_smtp_port: ${SMTP_PORT}
