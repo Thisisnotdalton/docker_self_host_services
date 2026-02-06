@@ -63,3 +63,8 @@ variable "smtp_from_name" {
   type        = string
   default     = "Keycloak"
 }
+
+variable "oauth_application_base_url" {
+  description = "The base url to use for generating template application redirect urls."
+  type        = string
+}

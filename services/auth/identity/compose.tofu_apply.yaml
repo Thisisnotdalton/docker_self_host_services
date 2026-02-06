@@ -18,6 +18,7 @@ services:
       TF_VAR_smtp_from_email: "keycloak@${SMTP_FROM_EMAIL_DOMAIN}"
       TF_VAR_smtp_from_name: "Keycloak"
       TF_VAR_state_encryption_passphrase: ${tofu_state_encryption_passphrase}
+      TF_VAR_oauth_application_base_url: "https://${HOST}.${DOMAIN}/apps/"
     networks:
       - keycloak
     depends_on:
