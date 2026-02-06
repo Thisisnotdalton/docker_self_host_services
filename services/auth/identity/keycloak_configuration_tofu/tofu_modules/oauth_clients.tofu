@@ -12,12 +12,13 @@ locals {
 }
 
 module "oauth_clients" {
-  source            = "./oauth_client"
-  for_each          = local.application_callback_urls
-  application_id    = each.key
-  keycloak_realm_id = keycloak_realm.realm.realm
-  output_directory  = local.config_output_directory
-  oidc_issuer_url   = local.oidc_issuer_url
-  callback_url      = each.value
+  source                   = "./oauth_client"
+  for_each                 = local.application_callback_urls
+  application_id           = each.key
+  keycloak_realm_id        = keycloak_realm.realm.realm
+  output_directory         = local.config_output_directory
+  oidc_issuer_url          = local.oidc_issuer_url
+  callback_url             = each.value
+  ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
 }
 

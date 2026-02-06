@@ -22,3 +22,9 @@ variable "output_directory" {
   description = "The directory to write output files to."
   type        = string
 }
+
+variable "ssl_insecure_skip_verify" {
+  description = "Whether to skip SSL/TLS verification for HTTPS."
+  type        = bool
+  default = false
+}

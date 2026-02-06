@@ -3,6 +3,7 @@ provider="keycloak-oidc"
 email_domains=["*"]
 client_id="${client_id}"
 oidc_issuer_url="${oidc_issuer_url}"
+ssl_insecure_skip_verify=${ssl_insecure_skip_verify}
 # Assume secrets are provided by docker compose
 client_secret_file="/run/secrets/${application_id}_oauth_client_secret"
 cookie_secret_file="/run/secrets/${application_id}_oauth_cookie_secret"
@@ -19,4 +20,4 @@ upstreams="static://202"
 # to click on a button to be redirected to the identity provider
 # It can be activated only when traefik is not configure with
 # the error redirection middleware as this example.
-skip_provider_button="true"
+skip_provider_button=true

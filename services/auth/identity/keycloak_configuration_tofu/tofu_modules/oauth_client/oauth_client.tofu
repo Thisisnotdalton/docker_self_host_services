@@ -46,6 +46,7 @@ locals {
       oidc_issuer_url = var.oidc_issuer_url
       application_id  = local.application_id
       redirect_url    = var.callback_url
+      ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
     }
   )
 }

@@ -73,3 +73,9 @@ variable "oauth_application_base_url" {
   description = "The base url to use for generating template application redirect urls."
   type        = string
 }
+
+variable "ssl_insecure_skip_verify" {
+  description = "Whether to skip SSL/TLS verification for HTTPS."
+  type        = bool
+  default     = false
+}
