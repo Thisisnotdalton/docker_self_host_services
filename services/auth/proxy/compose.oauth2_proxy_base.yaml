@@ -1,18 +1,18 @@
 services:
-  oauth2-proxy:
+  oauth2-proxy-base:
     image: quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_IMAGE_TAG}
     environment:
-      OAUTH_COOKIE_SECRET: ${OAUTH_COOKIE_SECRET}
       APPLICATION_ID: ${APPLICATION_ID}
-      APPLICATION_CLIENT_SECRET: ${APPLICATION_CLIENT_SECRET}
+      OAUTH_COOKIE_SECRET_FILE: ${OAUTH_COOKIE_SECRET}
+      APPLICATION_CLIENT_SECRET_FILE: ${APPLICATION_CLIENT_SECRET}
       REDIRECT_URL: "https://${HOST}.${DOMAIN}/${APPLICATION_ID}"
       OIDC_ISSUER_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
       EMAIL_DOMAIN: "*"
     command: >
       --config "/oauth2-proxy.cfg"
-      --cookie-secret="$$OAUTH_COOKIE_SECRET"
+      --cookie-secret-file="$$OAUTH_COOKIE_SECRET_FILE"
+      --client-secret-file="$$APPLICATION_CLIENT_SECRET_FILE"
       --client-id="$$APPLICATION_ID"
-      --client-secret="$$APPLICATION_CLIENT_SECRET"
       --redirect-url="$$REDIRECT_URL"
       --oidc-issuer-url="$$OIDC_ISSUER_URL"
       --email-domain="$$EMAIL_DOMAIN"
