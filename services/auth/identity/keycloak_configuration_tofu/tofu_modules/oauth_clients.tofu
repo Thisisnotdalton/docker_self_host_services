@@ -8,15 +8,16 @@ locals {
     for application_id in local.applications :
     application_id => "${local.application_base_redirect_url}/${application_id}"
   }
-  secrets_output_directory = "./secrets"
+  config_output_directory = "./config"
 }
 
-module "oauth_client_secrets" {
-  source                   = "./oauth_client_secrets"
-  for_each                 = local.application_redirect_urls
-  application_id           = each.key
-  redirect_url             = each.value
-  keycloak_realm_id        = keycloak_realm.realm.id
-  output_directory = local.secrets_output_directory
+module "oauth_clients" {
+  source            = "./oauth_client"
+  for_each          = local.application_redirect_urls
+  application_id    = each.key
+  redirect_url      = each.value
+  keycloak_realm_id = keycloak_realm.realm.id
+  output_directory  = local.config_output_directory
+  keycloak_url      = var.keycloak_url
 }
 

@@ -3,6 +3,11 @@ variable "keycloak_realm_id" {
   type        = string
 }
 
+variable "keycloak_url" {
+  description = "The URL endpoint to connect to Keycloak."
+  type        = string
+}
+
 variable "application_id" {
   description = "The id of the application to create an OAuth client for. Used for generating the output file names."
   type        = string
