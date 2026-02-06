@@ -4,7 +4,9 @@ services:
     depends_on:
       traefik:
         condition: service_healthy
-      oauth2-proxy:
-        condition: service_healthy
     networks:
       - traefik
+    labels:
+      - "traefik.enable=true"
+      # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
+      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
