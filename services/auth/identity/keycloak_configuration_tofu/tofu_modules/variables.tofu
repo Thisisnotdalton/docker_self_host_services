@@ -9,6 +9,11 @@ variable "keycloak_internal_url" {
   type        = string
 }
 
+variable "keycloak_public_url" {
+  description = "The public URL endpoint to connect to Keycloak."
+  type        = string
+}
+
 variable "keycloak_username" {
   description = "The user to authenticate for Keycloak management."
   type        = string

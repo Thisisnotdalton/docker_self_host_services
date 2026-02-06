@@ -8,7 +8,7 @@ locals {
     application_id => "${var.oauth_application_base_url}/${application_id}"
   }
   config_output_directory = "./config"
-  oidc_issuer_url         = "${var.keycloak_internal_url}/realms/${keycloak_realm.realm.realm}"
+  oidc_issuer_url         = "${var.keycloak_public_url}/realms/${keycloak_realm.realm.realm}"
 }
 
 module "oauth_clients" {

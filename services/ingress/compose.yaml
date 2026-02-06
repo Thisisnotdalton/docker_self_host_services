@@ -35,8 +35,10 @@ services:
       - ./traefik_configuration/:/etc/traefik/dynamic
       - traefik-certificates:/etc/traefik/acme
     networks:
-      - traefik
-      - auth
+      traefik:
+        aliases:
+          - "${HOST}.${DOMAIN}"
+      auth:
     ports:
       - "80:80"
       - "443:443"
