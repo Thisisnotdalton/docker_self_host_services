@@ -1,8 +1,16 @@
 terraform {
   required_providers {
     keycloak = {
-      source = "keycloak/keycloak"
+      source  = "keycloak/keycloak"
       version = "5.6.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.5.3"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.7.2"
     }
   }
   encryption {
@@ -26,7 +34,7 @@ terraform {
       keys = key_provider.pbkdf2.key_provider
     }
     state {
-      method = method.aes_gcm.method
+      method   = method.aes_gcm.method
       enforced = true
     }
   }

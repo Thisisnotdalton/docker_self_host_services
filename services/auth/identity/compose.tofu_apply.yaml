@@ -4,6 +4,7 @@ services:
     working_dir: /work
     volumes:
       - tofu_state:/work
+      - ${OAUTH_SECRETS_DIR}:/work/secrets
     environment:
       TF_VAR_keycloak_url: ${KEYCLOAK_URL:-http://keycloak:8080/auth}
       TF_VAR_keycloak_username: ${KEYCLOAK_ADMIN}
@@ -25,7 +26,7 @@ services:
     command: >
       sh -lc "
         cp -a /tofu_modules/. /work/ &&
-        tofu -chdir=/work init -input=false &&
+        tofu -chdir=/work init -upgrade -input=false &&
         tofu -chdir=/work apply -auto-approve -input=false
       "
     restart: "no"
