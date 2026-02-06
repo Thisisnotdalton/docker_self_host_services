@@ -1,5 +1,5 @@
 environments:
-  dev:
+  prod:
     variables:
       - name: SMTP_HOST
         value: mail.smtp2go.com
