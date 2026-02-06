@@ -5,7 +5,7 @@ environments:
         value: "v7.13.0-alpine"
 
       - name: OAUTH_CONFIG_DIR
-        value: "/etc/oauth2-proxy-config/prod"
+        value: "~/oauth2-proxy-config/prod"
 
       - name: OAUTH_SSL_INSECURE_SKIP_VERIFY
         value: "true"
