@@ -1,20 +1,20 @@
 secrets:
   whoami_oauth_cookie_secret:
-    file: ${OAUTH_SECRETS_DIR}/whoami_oauth_cookie_secret.txt
-  whoami_application_client_secret:
-    file: ${OAUTH_SECRETS_DIR}/whoami_application_client_secret.txt
+    file: ${OAUTH_SECRETS_DIR}/whoami/oauth_cookie_secret
+  whoami_oauth_client_secret:
+    file: ${OAUTH_SECRETS_DIR}/whoami/oauth_client_secret
 services:
   whoami_proxy:
     extends:
       file: ../auth/proxy/compose.oauth2_proxy_base.yaml
-      service: oauth2_proxy_base
+      service: oauth2-proxy-base
     secrets:
       - whoami_oauth_cookie_secret
-      - whoami_application_client_secret
+      - whoami_oauth_client_secret
     environment:
       APPLICATION_ID: whoami
       OAUTH_COOKIE_SECRET_FILE: /run/secrets/whoami_oauth_cookie_secret
-      APPLICATION_CLIENT_SECRET: /run/secrets/whoami_application_client_secret
+      APPLICATION_CLIENT_SECRET: /run/secrets/whoami_oauth_client_secret
       REDIRECT_URL: "https://${HOST}.${DOMAIN}/whoami"
 #      OIDC_ISSUER_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
 #      EMAIL_DOMAIN: "*"
