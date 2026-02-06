@@ -42,7 +42,7 @@ terraform {
 
 provider "keycloak" {
   client_id = "admin-cli"
-  url = var.keycloak_url
+  url = var.keycloak_internal_url
   username = var.keycloak_username
   password = var.keycloak_password
 }

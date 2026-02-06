@@ -4,8 +4,8 @@ variable "state_encryption_passphrase" {
   sensitive   = true
 }
 
-variable "keycloak_url" {
-  description = "The URL endpoint to connect to Keycloak."
+variable "keycloak_internal_url" {
+  description = "The internal URL endpoint to connect to Keycloak."
   type        = string
 }
 

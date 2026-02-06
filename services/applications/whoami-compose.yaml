@@ -5,6 +5,7 @@ secrets:
     file: ${OAUTH_CONFIG_DIR}/whoami/oauth_client_secret
 services:
   oauth2-proxy-whoami:
+    hostname: oauth2-proxy-whoami.${DOMAIN}
     extends:
       file: ../auth/proxy/compose.oauth2_proxy_base.yaml
       service: oauth2-proxy-base
@@ -18,7 +19,7 @@ services:
       # Enable TLS on this router
       - "traefik.http.routers.oauth2-proxy-whoami.tls=true"
       # Define middlewares for this oauth app
-      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=https://${HOST}.${DOMAIN}/apps/whoami/oauth2/"
+      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=http://oauth2-proxy-whoami.${DOMAIN}:4180/apps/whoami/oauth2/"
       - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.trustForwardHeader=true"
       - "traefik.http.middlewares.oauth-errors-whoami.errors.status=401-403"
       - "traefik.http.middlewares.oauth-errors-whoami.errors.query=/apps/whoami/oauth2/sign_in?rd={url}"

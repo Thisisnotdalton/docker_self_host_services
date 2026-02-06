@@ -1,7 +1,7 @@
 locals {
   application_id = var.application_id
   output_path    = "${var.output_directory}/${local.application_id}"
-  oidc_issuer_url = "${var.keycloak_url}/realms/${var.keycloak_realm_id}"
+  oidc_issuer_url = "${var.keycloak_internal_url}/realms/${var.keycloak_realm_id}"
 }
 
 resource "time_rotating" "rotate" {
@@ -19,7 +19,7 @@ resource "keycloak_openid_client" "client" {
   }
   standard_flow_enabled = true
   valid_redirect_uris = [
-    var.redirect_url
+    var.callback_url
   ]
 }
 
@@ -46,7 +46,7 @@ locals {
       client_id       = keycloak_openid_client.client.client_id
       oidc_issuer_url = local.oidc_issuer_url
       application_id  = local.application_id
-      redirect_url    = var.redirect_url
+      redirect_url    = var.callback_url
     }
   )
 }

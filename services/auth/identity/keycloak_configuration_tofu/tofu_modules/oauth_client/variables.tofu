@@ -3,8 +3,8 @@ variable "keycloak_realm_id" {
   type        = string
 }
 
-variable "keycloak_url" {
-  description = "The URL endpoint to connect to Keycloak."
+variable "keycloak_internal_url" {
+  description = "The internal URL endpoint to connect to Keycloak."
   type        = string
 }
 
@@ -13,8 +13,8 @@ variable "application_id" {
   type        = string
 }
 
-variable "redirect_url" {
-  description = "The OAuth2 client redirect url"
+variable "callback_url" {
+  description = "The OAuth2 client redirect url after signing in."
   type        = string
 }
 
