@@ -13,7 +13,7 @@ variable "redirect_url" {
   type        = string
 }
 
-variable "secrets_output_directory" {
+variable "output_directory" {
   description = "The directory to write output files to."
   type        = string
 }

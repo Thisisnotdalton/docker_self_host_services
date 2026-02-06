@@ -2,23 +2,18 @@ services:
   oauth2-proxy-base:
     image: quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_IMAGE_TAG}
     environment:
-      APPLICATION_ID: ${APPLICATION_ID}
-      OAUTH_COOKIE_SECRET_FILE: ${OAUTH_COOKIE_SECRET}
-      APPLICATION_CLIENT_SECRET_FILE: ${APPLICATION_CLIENT_SECRET}
-      REDIRECT_URL: "https://${HOST}.${DOMAIN}/${APPLICATION_ID}"
+      HOST: ${HOST}
+      DOMAIN: ${DOMAIN}
       OIDC_ISSUER_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
+      #      APPLICATION_ID: ${APPLICATION_ID}
+      #      OAUTH_COOKIE_SECRET_FILE: ${OAUTH_COOKIE_SECRET}
+      #      APPLICATION_CLIENT_SECRET_FILE: ${APPLICATION_CLIENT_SECRET}
       EMAIL_DOMAIN: "*"
     command: >
       --config "/oauth2-proxy.cfg"
-      --cookie-secret-file="$$OAUTH_COOKIE_SECRET_FILE"
-      --client-secret-file="$$APPLICATION_CLIENT_SECRET_FILE"
-      --client-id="$$APPLICATION_ID"
-      --redirect-url="$$REDIRECT_URL"
-      --oidc-issuer-url="$$OIDC_ISSUER_URL"
-      --email-domain="$$EMAIL_DOMAIN"
-      --proxy-prefix="/oauth2"
-    volumes:
-      - "./oauth2_proxy/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
+      --proxy-prefix='/apps/${APPLICATION_ID}/oauth2'
+#    volumes:
+#      - "./oauth2_proxy/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
     labels:
       - "traefik.enable=true"
       # Prefer traefik network for internal communication between containers, as this container is on multiple networks.

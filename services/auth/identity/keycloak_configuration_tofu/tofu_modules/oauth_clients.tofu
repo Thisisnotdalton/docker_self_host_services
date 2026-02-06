@@ -17,6 +17,6 @@ module "oauth_client_secrets" {
   application_id           = each.key
   redirect_url             = each.value
   keycloak_realm_id        = keycloak_realm.realm.id
-  secrets_output_directory = local.secrets_output_directory
+  output_directory = local.secrets_output_directory
 }
 

@@ -1,6 +1,7 @@
 locals {
-  application_id      = var.application_id
-  secrets_output_path = "${var.secrets_output_directory}/${local.application_id}"
+  application_id = var.application_id
+  output_path    = "${var.output_directory}/${local.application_id}"
+  proxy_prefix   = "/auth"
 }
 
 resource "time_rotating" "rotate" {
@@ -27,13 +28,31 @@ resource "random_bytes" "cookie_secret" {
 }
 
 resource "local_file" "oauth_cookie_secret" {
-  filename        = "${local.secrets_output_path}/oauth_cookie_secret"
+  filename        = "${local.output_path}/oauth_cookie_secret"
   content_base64  = random_bytes.cookie_secret.base64
   file_permission = "0600"
 }
 
 resource "local_file" "oauth_application_secret" {
-  filename        = "${local.secrets_output_path}/oauth_client_secret"
+  filename        = "${local.output_path}/oauth_client_secret"
   content_base64 = base64encode(keycloak_openid_client.client.client_secret)
   file_permission = "0600"
+}
+
+locals {
+  proxy_config = templatefile(
+    "${path.module}/oauth2-proxy-traefik.cfg.tftpl",
+    {
+      client_id       = keycloak_openid_client.client.id
+      oidc_issuer_url = keycloak_openid_client.client.base_url
+      application_id  = local.application_id
+      redirect_url    = var.redirect_url
+      proxy_prefix    = local.proxy_prefix
+    }
+  )
+}
+
+resource "local_file" "proxy_config" {
+  filename = "${local.output_path}/oauth2-proxy-traefik.cfg"
+  content = local.proxy_config
 }

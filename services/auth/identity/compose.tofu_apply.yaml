@@ -4,7 +4,7 @@ services:
     working_dir: /work
     volumes:
       - tofu_state:/work
-      - ${OAUTH_SECRETS_DIR}:/work/secrets
+      - ${OAUTH_CONFIG_DIR}:/work/secrets
     environment:
       TF_VAR_keycloak_url: ${KEYCLOAK_URL:-http://keycloak:8080/auth}
       TF_VAR_keycloak_username: ${KEYCLOAK_ADMIN}
