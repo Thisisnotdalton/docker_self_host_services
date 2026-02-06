@@ -1,36 +1,46 @@
 secrets:
   whoami_oauth_cookie_secret:
-    file: ${OAUTH_SECRETS_DIR}/whoami/oauth_cookie_secret
+    file: ${OAUTH_CONFIG_DIR}/whoami/oauth_cookie_secret
   whoami_oauth_client_secret:
-    file: ${OAUTH_SECRETS_DIR}/whoami/oauth_client_secret
+    file: ${OAUTH_CONFIG_DIR}/whoami/oauth_client_secret
 services:
-  whoami_proxy:
+  oauth2-proxy-whoami:
     extends:
       file: ../auth/proxy/compose.oauth2_proxy_base.yaml
       service: oauth2-proxy-base
     secrets:
       - whoami_oauth_cookie_secret
       - whoami_oauth_client_secret
-    environment:
-      APPLICATION_ID: whoami
-      OAUTH_COOKIE_SECRET_FILE: /run/secrets/whoami_oauth_cookie_secret
-      APPLICATION_CLIENT_SECRET: /run/secrets/whoami_oauth_client_secret
-      REDIRECT_URL: "https://${HOST}.${DOMAIN}/whoami"
-#      OIDC_ISSUER_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
-#      EMAIL_DOMAIN: "*"
+    labels:
+      - "traefik.http.routers.oauth2-proxy-whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/whoami/oauth2/`)"
+      - "traefik.http.routers.oauth2-proxy-whoami.entrypoints=websecure"
+      - "traefik.http.services.oauth2-proxy-whoami.loadbalancer.server.port=4180"
+      # Enable TLS on this router
+      - "traefik.http.routers.oauth2-proxy-whoami.tls=true"
+      # Define middlewares for this oauth app
+      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=https://${HOST}.${DOMAIN}/apps/whoami/oauth2/"
+      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.trustForwardHeader=true"
+      - "traefik.http.middlewares.oauth-errors-whoami.errors.status=401-403"
+      - "traefik.http.middlewares.oauth-errors-whoami.errors.query=/apps/whoami/oauth2/sign_in?rd={url}"
+      - "traefik.http.middlewares.oauth-errors-whoami.errors.service=oauth2-proxy-whoami"
+    volumes:
+      - "${OAUTH_CONFIG_DIR}/whoami/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
   whoami:
     extends:
       file: common.yaml
       service: application
     image: traefik/whoami
+    depends_on:
+      oauth2-proxy-whoami:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathRegexp(`^/whoami/?`)"
+      - "traefik.http.routers.whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathRegexp(`^/apps/whoami/?`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
       # Apply middlewares
-      - "traefik.http.routers.whoami.middlewares=compress-traefik@file,oauth-auth,oauth-errors,security-headers@file"
+      - "traefik.http.routers.whoami.middlewares=compress-traefik@file,security-headers@file,oauth-auth-whoami,oauth-errors-whoami"
       # Enable TLS on this router
       - "traefik.http.routers.whoami.tls=true"
-#      # Use Let's Encrypt for TLS management
+      # Use Let's Encrypt for TLS management
 #      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
