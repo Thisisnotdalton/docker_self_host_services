@@ -57,6 +57,7 @@ restart: ## Restart full stack (down + deploy)
 	$(MAKE) deploy
 
 images:  ## Rebuild all images
+	$(DC_CORE) build
 	$(DC_APPS) build
 
 remake: destroy images up ## Completely remake the stack
