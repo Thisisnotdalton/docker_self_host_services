@@ -2,4 +2,4 @@ environments:
   dev:
     variables:
       - name: OAUTH2_PROXY_IMAGE_TAG
-        value: "oauth2-proxy:v7.13.0-alpine"
+        value: "v7.13.0-alpine"
