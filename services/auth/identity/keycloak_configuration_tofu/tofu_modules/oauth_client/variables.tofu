@@ -3,8 +3,8 @@ variable "keycloak_realm_id" {
   type        = string
 }
 
-variable "keycloak_internal_url" {
-  description = "The internal URL endpoint to connect to Keycloak."
+variable "oidc_issuer_url" {
+  description = "The URL endpoint to connect to Keycloak and get oidc config."
   type        = string
 }
 

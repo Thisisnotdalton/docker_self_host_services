@@ -1,7 +1,6 @@
 locals {
   application_id = var.application_id
   output_path    = "${var.output_directory}/${local.application_id}"
-  oidc_issuer_url = "${var.keycloak_internal_url}/realms/${var.keycloak_realm_id}"
 }
 
 resource "time_rotating" "rotate" {
@@ -44,7 +43,7 @@ locals {
     "${path.module}/oauth2-proxy-traefik.cfg.tftpl",
     {
       client_id       = keycloak_openid_client.client.client_id
-      oidc_issuer_url = local.oidc_issuer_url
+      oidc_issuer_url = var.oidc_issuer_url
       application_id  = local.application_id
       redirect_url    = var.callback_url
     }
@@ -53,5 +52,5 @@ locals {
 
 resource "local_file" "proxy_config" {
   filename = "${local.output_path}/oauth2-proxy-traefik.cfg"
-  content = local.proxy_config
+  content  = local.proxy_config
 }

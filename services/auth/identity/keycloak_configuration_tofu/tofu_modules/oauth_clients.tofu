@@ -8,15 +8,16 @@ locals {
     application_id => "${var.oauth_application_base_url}/${application_id}"
   }
   config_output_directory = "./config"
+  oidc_issuer_url         = "${var.keycloak_internal_url}/realms/${keycloak_realm.realm.realm}"
 }
 
 module "oauth_clients" {
   source            = "./oauth_client"
   for_each          = local.application_callback_urls
   application_id    = each.key
-  keycloak_realm_id = keycloak_realm.realm.id
+  keycloak_realm_id = keycloak_realm.realm.realm
   output_directory  = local.config_output_directory
-  keycloak_internal_url = var.keycloak_internal_url
-  callback_url = each.value
+  oidc_issuer_url   = local.oidc_issuer_url
+  callback_url      = each.value
 }
 
