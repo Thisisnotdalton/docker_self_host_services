@@ -24,6 +24,8 @@ services:
       # HTTP -> HTTPS redirect at entrypoint level
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.http.tls.certresolver=letsencrypt"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${HOST}.${DOMAIN}"
       # Enable watching mounted volume for dynamic configuration
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
