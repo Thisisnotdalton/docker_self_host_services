@@ -50,6 +50,7 @@ down: ## Stop containers
 	$(DC_APPS) down --remove-orphans
 
 destroy: ## Stop containers and remove volumes
+	docker container prune -f
 	$(DC_APPS) down -v --remove-orphans
 
 restart: ## Restart full stack (down + deploy)
