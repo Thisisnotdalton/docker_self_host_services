@@ -39,7 +39,7 @@ services:
       # The file where ACME certificates are stored inside the container
       - "--certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json"
       # Use ACME (Let's Encrypt) to generate/renew certificates via DNS challenge
-      - "--certificatesresolvers.letsencrypt.acme.caServer='https://acme-v02.api.letsencrypt.org/directory'"
+      - "--certificatesresolvers.letsencrypt.acme.caServer=https://acme-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.provider=cloudflare"
       - "--certificatesresolvers.letsencrypt.acme.dnsChallenge.propagation.delayBeforeChecks=5"
       # The email address used by Let's Encrypt for renewal notices
