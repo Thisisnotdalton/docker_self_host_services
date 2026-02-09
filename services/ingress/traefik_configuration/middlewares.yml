@@ -4,8 +4,10 @@ http:
       compress: true
     append-slash:
       redirectRegex:
-        regex: "(.+[^/])$"
-        replacement: "${1}/"
+        permanent: true
+        regex: "^(https?://[^/?#]+/apps/[^/?#]+)(\\?.*)?$"
+        replacement: "${1}/${2}"
+
     security-headers:
       headers:
         browserXssFilter: true
