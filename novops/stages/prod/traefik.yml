@@ -18,3 +18,9 @@ environments:
 
       - name: TRAEFIK_CONFIG_DIR
         value: "~/docker-services-config/prod/traefik/"
+
+      - name: TRAEFIK_ACME_dns_api_secret
+        value:
+          bitwarden:
+            entry: pukiru-online-cloudflare_dns_secret
+            field: login.password
