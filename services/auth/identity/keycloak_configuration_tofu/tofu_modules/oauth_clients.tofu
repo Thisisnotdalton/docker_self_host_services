@@ -5,7 +5,7 @@ locals {
   ]
   application_callback_urls = {
     for application_id in local.applications :
-    application_id => "${var.oauth_application_base_url}/${application_id}"
+    application_id => "${var.oauth_application_base_url}/${application_id}/oauth/callback"
   }
   config_output_directory = "./config"
   oidc_issuer_url         = "${var.keycloak_public_url}/realms/${keycloak_realm.realm.realm}"
