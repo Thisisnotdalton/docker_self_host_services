@@ -45,3 +45,8 @@ services:
       retries: 3
       start_period: 5s
     restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/etc/traefik/acme
+      - ${TRAEFIK_CONFIG_DIR}:/etc/traefik/dynamic/
+      - ./traefik_configuration/middlewares.yml:/etc/traefik/dynamic/middlewares.yml

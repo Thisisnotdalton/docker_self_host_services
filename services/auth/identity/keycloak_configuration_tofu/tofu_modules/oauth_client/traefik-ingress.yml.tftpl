@@ -1,15 +1,4 @@
 http:
-  services:
-    ${application_id}:
-      loadBalancer:
-        servers:
-          - port: ${port}
-            passhostheader: true
-    ${application_id}_proxy:
-      loadBalancer:
-        servers:
-          - port: 4180
-            passhostheader: true
   middlewares:
     oauth-auth-${application_id}:
       forwardAuth:
@@ -19,29 +8,32 @@ http:
           - Authorization
           - X-Auth-Request-Access-Token
     oauth-errors-${application_id}:
-      status:
-        - "401-403"
-      service: ${application_id}_proxy
-      query: /apps/${application_id}/oauth2/sign_in?rd={url}
+      errors:
+        status:
+          - "401-403"
+        service: ${application_id}-oauth2-proxy@docker
+        query: /apps/${application_id}/oauth2/sign_in?rd={url}
+
   routers:
-    ${application_id}_proxy:
+    ${application_id}-oauth2-proxy:
+      service: ${application_id}-oauth2-proxy@docker
       rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
       entrypoints:
         - websecure
       middlewares:
-        - compress-traefik@file
-        - append-slash@file
-        - security-headers@file
+        - compress-traefik
+        - append-slash
+        - security-headers
     ${application_id}:
-      service: ${application_id}
+      service: ${application_id}@docker
       rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}`)&&!PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
       entrypoints:
         - websecure
       middlewares:
-        - compress-traefik@file
-        - append-slash@file
-        - security-headers@file
+        - compress-traefik
+        - append-slash
+        - security-headers
         - oauth-auth-${application_id}
         - oauth-errors-${application_id}

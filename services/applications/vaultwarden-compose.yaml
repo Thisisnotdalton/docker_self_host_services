@@ -10,8 +10,8 @@ secrets:
   vaultwarden_oauth_client_secret:
     file: ${OAUTH_CONFIG_DIR}/vaultwarden/oauth_client_secret
 services:
-  oauth2-proxy-vaultwarden:
-    hostname: oauth2-proxy-vaultwarden.${DOMAIN}
+  vaultwarden-oauth2-proxy:
+    hostname: oauth2-proxy-vaultwarden
     extends:
       file: ../auth/proxy/compose.oauth2_proxy_base.yaml
       service: oauth2-proxy-base
@@ -19,20 +19,9 @@ services:
       - vaultwarden_oauth_cookie_secret
       - vaultwarden_oauth_client_secret
     labels:
-      - "traefik.http.routers.oauth2-proxy-vaultwarden.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/${VAULTWARDEN_ROUTE_PREFIX}/oauth/`)"
-      - "traefik.http.routers.oauth2-proxy-vaultwarden.entrypoints=websecure"
-      - "traefik.http.services.oauth2-proxy-vaultwarden.loadbalancer.server.port=4180"
-      - "traefik.http.routers.oauth2-proxy-vaultwarden.tls=true"
-      # Make sure this router wins when both could match
-      - "traefik.http.routers.oauth2-proxy-vaultwarden.priority=200"
-      # Define middlewares for this oauth app
-      # Use Docker-network HTTP to avoid Traefik verifying its own dev TLS cert
-      - "traefik.http.middlewares.oauth-auth-vaultwarden.forwardAuth.address=http://oauth2-proxy-vaultwarden:4180/apps/${VAULTWARDEN_ROUTE_PREFIX}/oauth/auth"
-      - "traefik.http.middlewares.oauth-auth-vaultwarden.forwardAuth.trustForwardHeader=true"
-      - "traefik.http.middlewares.oauth-auth-vaultwarden.forwardAuth.authResponseHeaders=Authorization,X-Auth-Request-Access-Token"
-      - "traefik.http.middlewares.oauth-errors-vaultwarden.errors.status=401-403"
-      - "traefik.http.middlewares.oauth-errors-vaultwarden.errors.query=/apps/${VAULTWARDEN_ROUTE_PREFIX}/oauth2/sign_in?rd={url}"
-      - "traefik.http.middlewares.oauth-errors-vaultwarden.errors.service=oauth2-proxy-vaultwarden"
+      - "traefik.http.routers.vaultwarden-oauth2-proxy.service=vaultwarden-oauth2-proxy"
+      - "traefik.http.services.vaultwarden-oauth2-proxy.loadbalancer.server.port=4180"
+      - "traefik.http.services.vaultwarden-oauth2-proxy.loadbalancer.passhostheader=true"
     volumes:
       - "${OAUTH_CONFIG_DIR}/vaultwarden/oauth2-proxy.cfg:/oauth2-proxy.cfg"
   vaultwarden:
@@ -41,7 +30,7 @@ services:
       service: application
     image: ${VAULTWARDEN_IMAGE_TAG}
     depends_on:
-      oauth2-proxy-vaultwarden:
+      vaultwarden-oauth2-proxy:
         condition: service_healthy
     volumes:
       - vaultwarden-data:/data
@@ -66,11 +55,6 @@ services:
       retries: 3
       start_period: 90s
     labels:
-      # Only protect the app paths, NOT the oauth2-proxy endpoints
-      - "traefik.http.routers.vaultwarden.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/${VAULTWARDEN_ROUTE_PREFIX}`)&&!PathPrefix(`/apps/${VAULTWARDEN_ROUTE_PREFIX}/oauth/`)"
-      - "traefik.http.routers.vaultwarden.tls=true"
-      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
       - "traefik.http.routers.vaultwarden.service=vaultwarden"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
       - "traefik.http.services.vaultwarden.loadbalancer.passhostheader=true"
-      - "traefik.http.routers.vaultwarden.middlewares=compress-traefik@file,append-slash@file,security-headers@file,oauth-auth-vaultwarden,oauth-errors-vaultwarden"

@@ -40,7 +40,7 @@ resource "local_file" "oauth_application_secret" {
 
 locals {
   proxy_config = templatefile(
-    "oauth2-proxy.cfg.tftpl",
+    "${path.module}/oauth2-proxy.cfg.tftpl",
     {
       client_id                = keycloak_openid_client.client.client_id
       oidc_issuer_url          = var.oidc_issuer_url
