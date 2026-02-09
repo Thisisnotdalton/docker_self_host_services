@@ -49,7 +49,7 @@ services:
       ADMIN_TOKEN: "${VAULTWARDEN_ADMIN_TOKEN}"
       SIGNUPS_VERIFY: "true"
       DNS_PREFER_IPV6: "true"
-      DOMAIN: "https://${HOST}.${DOMAIN}/${VAULTWARDEN_ROUTE_PREFIX}"
+      DOMAIN: "https://${HOST}.${DOMAIN}/apps/${VAULTWARDEN_ROUTE_PREFIX}"
       SMTP_HOST: "${SMTP_HOST}"
       SMTP_PORT: "${SMTP_PORT}"
       SMTP_SECURITY: "${SMTP_SECURITY}"
@@ -60,28 +60,17 @@ services:
       - vaultwarden
       - traefik
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/${VAULTWARDEN_ROUTE_PREFIX}"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/apps/${VAULTWARDEN_ROUTE_PREFIX}"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 90s
     labels:
-      # Match incoming requests on a specific hostname
-      - "traefik.http.routers.vaultwarden.rule=Host(`${HOST}.${DOMAIN}`)&&PathRegexp(`^/${VAULTWARDEN_ROUTE_PREFIX}/?`)"
-      # Apply middlewares
-      - "traefik.http.routers.vaultwarden.middlewares=compress-traefik@file,append-slash@file,security-headers@file"
-      # Assign the router to a named Traefik service
-      - "traefik.http.routers.vaultwarden.service=vaultwarden"
-      # Use the 'websecure' (HTTPS) entry point
-      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
-      # Define the internal container port for routing
-      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
-      - "traefik.http.routers.vaultwarden.tls=true"
-      # Pass the original Host header to the container
-      - "traefik.http.services.vaultwarden.loadbalancer.passhostheader=true"
       # Only protect the app paths, NOT the oauth2-proxy endpoints
       - "traefik.http.routers.vaultwarden.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/${VAULTWARDEN_ROUTE_PREFIX}`)&&!PathPrefix(`/apps/${VAULTWARDEN_ROUTE_PREFIX}/oauth/`)"
-      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
-      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
-      - "traefik.http.routers.vaultwarden.middlewares=compress-traefik@file,security-headers@file,oauth-auth-vaultwarden,oauth-errors-vaultwarden"
       - "traefik.http.routers.vaultwarden.tls=true"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.service=vaultwarden"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      - "traefik.http.services.vaultwarden.loadbalancer.passhostheader=true"
+      - "traefik.http.routers.vaultwarden.middlewares=compress-traefik@file,append-slash@file,security-headers@file,oauth-auth-vaultwarden,oauth-errors-vaultwarden"
