@@ -11,4 +11,4 @@ environments:
         value: "true"
 
       - name: VAULTWARDEN_ROUTE_PREFIX
-        value: vault
+        value: vaultwarden
