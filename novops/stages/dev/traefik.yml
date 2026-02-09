@@ -16,17 +16,5 @@ environments:
       - name: TRAEFIK_DASHBOARD_ROUTE_PREFIX
         value: traefik
 
-      - name: OAUTH_COOKIE_SECRET
-        value:
-          bitwarden:
-            entry: pukiru-online-oauth_cookie_secret
-            field: login.password
-
-      - name: APPLICATION_ID
-        value: whoami
-
-      - name: APPLICATION_CLIENT_SECRET
-        value:
-          bitwarden:
-            entry: pukiru-online-oauth2_proxy_client_secret
-            field: login.password
+      - name: TRAEFIK_CONFIG_DIR
+        value: "~/traefik-config/dev"
