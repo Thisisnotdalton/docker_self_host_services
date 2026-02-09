@@ -17,4 +17,4 @@ environments:
         value: traefik
 
       - name: TRAEFIK_CONFIG_DIR
-        value: "~/traefik-config/prod"
+        value: "~/docker-services-config/prod/traefik/"
