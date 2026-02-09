@@ -33,8 +33,9 @@ services:
     command: start
     environment:
       KC_PROXY_HEADERS: xforwarded
-      KC_PROXY: edge
-      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT: "true"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HOSTNAME: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_RELATIVE_PATH: "/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
