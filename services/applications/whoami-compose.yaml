@@ -38,12 +38,9 @@ services:
       oauth2-proxy-whoami:
         condition: service_healthy
     labels:
-      - "traefik.enable=true"
       # Only protect the app paths, NOT the oauth2-proxy endpoints
       - "traefik.http.routers.whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/whoami`)&&!PathPrefix(`/apps/whoami/oauth/`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
       - "traefik.http.routers.whoami.middlewares=compress-traefik@file,security-headers@file,oauth-auth-whoami,oauth-errors-whoami"
       - "traefik.http.routers.whoami.tls=true"
-      # Use Let's Encrypt for TLS management
-#      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
