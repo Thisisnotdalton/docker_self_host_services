@@ -19,7 +19,8 @@ services:
       # Enable TLS on this router
       - "traefik.http.routers.oauth2-proxy-whoami.tls=true"
       # Define middlewares for this oauth app
-      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=https://${HOST}.${DOMAIN}/oauth2/whoami/"
+      # Use Docker-network HTTP to avoid Traefik verifying its own dev TLS cert
+      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=http://oauth2-proxy-whoami:4180/apps/whoami/oauth/auth"
       - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.trustForwardHeader=true"
       - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.authResponseHeaders=Authorization,X-Auth-Request-Access-Token"
       - "traefik.http.middlewares.oauth-errors-whoami.errors.status=401-403"
