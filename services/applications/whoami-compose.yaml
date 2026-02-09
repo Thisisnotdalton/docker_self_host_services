@@ -13,16 +13,17 @@ services:
       - whoami_oauth_cookie_secret
       - whoami_oauth_client_secret
     labels:
-      - "traefik.http.routers.oauth2-proxy-whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/whoami/oauth2/`)"
+      - "traefik.http.routers.oauth2-proxy-whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/oauth2/whoami/`)"
       - "traefik.http.routers.oauth2-proxy-whoami.entrypoints=websecure"
       - "traefik.http.services.oauth2-proxy-whoami.loadbalancer.server.port=4180"
       # Enable TLS on this router
       - "traefik.http.routers.oauth2-proxy-whoami.tls=true"
       # Define middlewares for this oauth app
-      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=http://oauth2-proxy-whoami.${DOMAIN}:4180/apps/whoami/oauth2/"
+      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=https://${HOST}.${DOMAIN}/oauth2/whoami/"
       - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.trustForwardHeader=true"
+      - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.authResponseHeaders=Authorization,X-Auth-Request-Access-Token"
       - "traefik.http.middlewares.oauth-errors-whoami.errors.status=401-403"
-      - "traefik.http.middlewares.oauth-errors-whoami.errors.query=/apps/whoami/oauth2/sign_in?rd={url}"
+      - "traefik.http.middlewares.oauth-errors-whoami.errors.query=/oauth2/whoami/sign_in?rd={url}"
       - "traefik.http.middlewares.oauth-errors-whoami.errors.service=oauth2-proxy-whoami"
     volumes:
       - "${OAUTH_CONFIG_DIR}/whoami/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
