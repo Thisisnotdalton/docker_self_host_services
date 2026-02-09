@@ -10,13 +10,13 @@ cookie_secret_file="/run/secrets/${application_id}_oauth_cookie_secret"
 redirect_url="${redirect_url}"
 proxy_prefix="/oauth2/${application_id}/"
 code_challenge_method="S256"
-set_authorization_header="true"
-set_xauthrequest="true"
-cookie_secure="true"
+set_authorization_header=true
+set_xauthrequest=true
+cookie_secure=true
 cookie_domains="${cookie_domain}"
 # Mandatory option when using oauth2-proxy with traefik
-reverse_proxy="true"
-silence_ping_logging="true"
+reverse_proxy=true
+silence_ping_logging=true
 # Required for traefik with ForwardAuth and static upstream configuration
 upstreams="static://202"
 # The following option skip the page requesting the user
