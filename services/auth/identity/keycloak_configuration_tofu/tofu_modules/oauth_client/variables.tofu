@@ -18,8 +18,8 @@ variable "callback_url" {
   type        = string
 }
 
-variable "output_directory" {
-  description = "The directory to write output files to."
+variable "proxy_config_output_directory" {
+  description = "The directory to write output OAuth2 Proxy config files to."
   type        = string
 }
 
@@ -32,4 +32,15 @@ variable "ssl_insecure_skip_verify" {
 variable "cookie_domain" {
   type = string
   description = "The domain to assign to cookies."
+}
+
+variable "traefik_config_output_directory" {
+  description = "The directory to write output traefik config files to."
+  type        = string
+}
+
+variable "service_port" {
+  type = number
+  default = 80
+  description = "Port for HTTP service."
 }

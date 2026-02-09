@@ -4,7 +4,8 @@ services:
     working_dir: /work
     volumes:
       - tofu_state:/work
-      - ${OAUTH_CONFIG_DIR}:/work/config
+      - ${OAUTH_CONFIG_DIR}:/work/proxy_config
+      - ${TRAEFIK_CONFIG_DIR}:/work/traefik_config
     environment:
       TF_VAR_keycloak_internal_url: ${KEYCLOAK_URL:-http://keycloak:8080/${KEYCLOAK_ROUTE_PREFIX}}
       TF_VAR_keycloak_public_url: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"

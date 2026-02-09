@@ -1,3 +1,10 @@
 include:
   - services/applications/whoami-compose.yaml
   - services/applications/vaultwarden-compose.yaml
+services:
+  traefik:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/etc/traefik/acme
+      - ./traefik_configuration/:/etc/traefik/dynamic/common
+      - ${TRAEFIK_CONFIG_DIR}:/etc/traefik/dynamic

@@ -28,7 +28,7 @@ services:
       - "traefik.http.middlewares.oauth-errors-whoami.errors.query=/apps/whoami/oauth2/sign_in?rd={url}"
       - "traefik.http.middlewares.oauth-errors-whoami.errors.service=oauth2-proxy-whoami"
     volumes:
-      - "${OAUTH_CONFIG_DIR}/whoami/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
+      - "${OAUTH_CONFIG_DIR}/whoami/oauth2-proxy.cfg:/oauth2-proxy.cfg"
   whoami:
     extends:
       file: common.yaml

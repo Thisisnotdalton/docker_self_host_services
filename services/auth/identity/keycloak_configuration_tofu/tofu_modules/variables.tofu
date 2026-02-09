@@ -84,3 +84,12 @@ variable "cookie_domain" {
   type        = string
   description = "The domain to assign to cookies."
 }
+
+variable "application_ports" {
+  type = map(number)
+  description = "Mapping of unique application names to HTTP ports on hosting containers."
+  default = {
+    "whoami": 80
+    "vaultwarden": 80
+  }
+}

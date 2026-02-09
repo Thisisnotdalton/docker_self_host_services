@@ -34,7 +34,7 @@ services:
       - "traefik.http.middlewares.oauth-errors-vaultwarden.errors.query=/apps/${VAULTWARDEN_ROUTE_PREFIX}/oauth2/sign_in?rd={url}"
       - "traefik.http.middlewares.oauth-errors-vaultwarden.errors.service=oauth2-proxy-vaultwarden"
     volumes:
-      - "${OAUTH_CONFIG_DIR}/vaultwarden/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
+      - "${OAUTH_CONFIG_DIR}/vaultwarden/oauth2-proxy.cfg:/oauth2-proxy.cfg"
   vaultwarden:
     extends:
       file: common.yaml
