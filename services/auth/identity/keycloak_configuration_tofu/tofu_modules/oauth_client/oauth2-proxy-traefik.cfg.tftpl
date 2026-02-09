@@ -9,6 +9,8 @@ client_secret_file="/run/secrets/${application_id}_oauth_client_secret"
 cookie_secret_file="/run/secrets/${application_id}_oauth_cookie_secret"
 redirect_url="${redirect_url}"
 proxy_prefix="/apps/${application_id}/oauth/"
+# Allow redirects back to your dev host
+whitelist_domains=["${cookie_domain}"]
 code_challenge_method="S256"
 set_authorization_header=true
 set_xauthrequest=true
