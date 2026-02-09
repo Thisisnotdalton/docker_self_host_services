@@ -11,7 +11,6 @@ services:
       EMAIL_DOMAIN: "*"
     command: >
       --config "/oauth2-proxy.cfg"
-      --proxy-prefix='/apps/${APPLICATION_ID}/oauth2'
 #    volumes:
 #      - "./oauth2_proxy/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
     labels:
