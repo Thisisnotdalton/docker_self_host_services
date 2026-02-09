@@ -11,6 +11,7 @@ redirect_url="${redirect_url}"
 proxy_prefix="/apps/${application_id}/oauth2"
 code_challenge_method="S256"
 cookie_secure="true"
+cookie_domains="${cookie_domain}"
 # Mandatory option when using oauth2-proxy with traefik
 reverse_proxy="true"
 silence_ping_logging="true"

@@ -20,5 +20,6 @@ module "oauth_clients" {
   oidc_issuer_url          = local.oidc_issuer_url
   callback_url             = each.value
   ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
+  cookie_domain            = var.cookie_domain
 }
 

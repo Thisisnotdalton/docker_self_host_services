@@ -79,3 +79,8 @@ variable "ssl_insecure_skip_verify" {
   type        = bool
   default     = false
 }
+
+variable "cookie_domain" {
+  type        = string
+  description = "The domain to assign to cookies."
+}
