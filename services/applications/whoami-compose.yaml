@@ -16,8 +16,9 @@ services:
       - "traefik.http.routers.oauth2-proxy-whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/whoami/oauth/`)"
       - "traefik.http.routers.oauth2-proxy-whoami.entrypoints=websecure"
       - "traefik.http.services.oauth2-proxy-whoami.loadbalancer.server.port=4180"
-      # Enable TLS on this router
       - "traefik.http.routers.oauth2-proxy-whoami.tls=true"
+      # Make sure this router wins when both could match
+      - "traefik.http.routers.oauth2-proxy-whoami.priority=200"
       # Define middlewares for this oauth app
       # Use Docker-network HTTP to avoid Traefik verifying its own dev TLS cert
       - "traefik.http.middlewares.oauth-auth-whoami.forwardAuth.address=http://oauth2-proxy-whoami:4180/apps/whoami/oauth/auth"
@@ -42,9 +43,7 @@ services:
       - "traefik.http.routers.whoami.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/apps/whoami`)&&!PathPrefix(`/apps/whoami/oauth/`)"
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.services.whoami.loadbalancer.server.port=80"
-      # Apply middlewares
       - "traefik.http.routers.whoami.middlewares=compress-traefik@file,security-headers@file,oauth-auth-whoami,oauth-errors-whoami"
-      # Enable TLS on this router
       - "traefik.http.routers.whoami.tls=true"
       # Use Let's Encrypt for TLS management
 #      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
