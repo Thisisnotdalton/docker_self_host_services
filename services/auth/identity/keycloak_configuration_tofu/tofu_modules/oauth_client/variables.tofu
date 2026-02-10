@@ -38,9 +38,3 @@ variable "traefik_config_output_directory" {
   description = "The directory to write output traefik config files to."
   type        = string
 }
-
-variable "service_port" {
-  type = number
-  default = 80
-  description = "Port for HTTP service."
-}

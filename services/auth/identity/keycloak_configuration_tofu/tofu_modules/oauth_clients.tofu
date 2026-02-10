@@ -15,6 +15,5 @@ module "oauth_clients" {
   callback_url             = "${var.oauth_application_base_url}/${each.key}/oauth/callback"
   ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
   cookie_domain            = var.cookie_domain
-  service_port = each.value
 }
 

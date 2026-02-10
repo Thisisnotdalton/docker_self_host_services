@@ -55,7 +55,6 @@ locals {
     {
       public_host    = var.cookie_domain
       application_id = local.application_id
-      port           = var.service_port
     }
   )
 }
