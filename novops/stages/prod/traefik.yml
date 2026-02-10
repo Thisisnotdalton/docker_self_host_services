@@ -24,3 +24,6 @@ environments:
           bitwarden:
             entry: pukiru-online-cloudflare_dns_secret
             field: login.password
+
+      - name: TRAEFIK_ACME_EMAIL
+        value: dalton@pukiru.games
