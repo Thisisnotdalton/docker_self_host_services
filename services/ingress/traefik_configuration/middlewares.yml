@@ -7,7 +7,10 @@ http:
         permanent: true
         regex: "^(https?://[^/?#]+/apps/[^/?#]+)(\\?.*)?$"
         replacement: "${1}/${2}"
-
+    strip-app-prefix:
+      stripPrefixRegex:
+        regex:
+          - "^/apps/[^/]+/?"
     security-headers:
       headers:
         browserXssFilter: true
