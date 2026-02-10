@@ -19,7 +19,6 @@ services:
     volumes:
       - "${OAUTH_CONFIG_DIR}/whoami/oauth2-proxy.cfg:/oauth2-proxy.cfg"
   whoami:
-#    hostname: whoami
     extends:
       file: common.yaml
       service: application
