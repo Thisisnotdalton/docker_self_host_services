@@ -85,11 +85,14 @@ variable "cookie_domain" {
   description = "The domain to assign to cookies."
 }
 
-variable "application_ports" {
-  type = map(number)
-  description = "Mapping of unique application names to HTTP ports on hosting containers."
+variable "application_servers" {
+  type = map(list(string))
+  description = "Mapping of unique application ids to external servers to assign as load balancers. A list with an empty string is sufficient for container services which apply their own Traefik labels."
   default = {
-    "whoami": 80
-    "vaultwarden": 80
+    "whoami" : [""]
+    "vaultwarden" : [""]
+    "whoami-external" : [
+      "https://docker.localhost/apps/whoami"
+    ]
   }
 }

@@ -31,7 +31,13 @@ variable "ssl_insecure_skip_verify" {
 
 variable "cookie_domain" {
   type = string
-  description = "The domain to assign to cookies."
+  description = "The public domain to assign to cookies."
+}
+
+variable "application_servers" {
+  type = list(string)
+  description = "The servers to direct proxied requests to; this should only be set for non-container hosted services."
+  default = []
 }
 
 variable "traefik_config_output_directory" {

@@ -26,9 +26,9 @@ http:
         - append-slash
         - security-headers
     ${application_id}:
-      service: ${application_id}@docker
-      rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}`)&&!PathPrefix(`/apps/${application_id}/oauth/`)
+      rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}/`)&&!PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
+      service: ${application_id}%{ if length(urls) == 0 }@docker%{ endif }
       entrypoints:
         - websecure
       middlewares:
@@ -37,3 +37,12 @@ http:
         - security-headers
         - oauth-auth-${application_id}
         - oauth-errors-${application_id}
+%{ if length(urls) > 0 ~}
+  services:
+    ${application_id}:
+      loadBalancer:
+        servers:
+%{ for url in urls ~}
+          - url: ${url}
+%{ endfor ~}
+%{ endif ~}

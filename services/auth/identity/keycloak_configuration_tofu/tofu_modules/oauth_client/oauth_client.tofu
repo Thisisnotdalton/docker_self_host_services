@@ -1,6 +1,11 @@
 locals {
-  application_id = var.application_id
-  proxy_config_output_path    = "${var.proxy_config_output_directory}/${local.application_id}"
+  application_id           = var.application_id
+  proxy_config_output_path = "${var.proxy_config_output_directory}/${local.application_id}"
+  load_balancers           = [
+    for url in var.application_servers :
+    url
+    if url != ""
+  ]
 }
 
 resource "time_rotating" "rotate" {
@@ -55,6 +60,7 @@ locals {
     {
       public_host    = var.cookie_domain
       application_id = local.application_id
+      urls = local.load_balancers
     }
   )
 }
