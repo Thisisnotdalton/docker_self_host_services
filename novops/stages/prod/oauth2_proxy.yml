@@ -8,4 +8,4 @@ environments:
         value: "~/docker-services-config/prod/oauth2-proxy/"
 
       - name: OAUTH_SSL_INSECURE_SKIP_VERIFY
-        value: "true"
+        value: "false"
