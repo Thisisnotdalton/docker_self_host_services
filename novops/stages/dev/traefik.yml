@@ -17,4 +17,4 @@ environments:
         value: traefik
 
       - name: TRAEFIK_CONFIG_DIR
-        value: "~/docker-services-config/dev/traefik/"
+        value: "~/docker-services-config/scriptkitties/dev/traefik/"

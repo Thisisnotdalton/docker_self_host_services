@@ -17,7 +17,7 @@ environments:
         value: traefik
 
       - name: TRAEFIK_CONFIG_DIR
-        value: "~/docker-services-config/prod/traefik/"
+        value: "~/docker-services-config/scriptkitties/prod/traefik/"
 
       - name: TRAEFIK_ACME_dns_api_secret
         value:
