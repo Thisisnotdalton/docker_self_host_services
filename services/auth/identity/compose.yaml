@@ -5,7 +5,8 @@ networks:
 volumes:
   keycloak_postgres-data:
     name:  "${HOST}.${DOMAIN}-keycloak_postgres-data"
-
+include:
+  - compose.tofu_apply.yaml
 services:
   keycloak_postgres:
     image: ${KEYCLOAK_POSTGRES_IMAGE_TAG}
@@ -27,12 +28,14 @@ services:
       - keycloak
 
   keycloak:
+    hostname: keycloak
     image: ${KEYCLOAK_IMAGE_TAG}
     command: start
     environment:
       KC_PROXY_HEADERS: xforwarded
-      KC_PROXY: edge
-      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT: "true"
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HOSTNAME: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_RELATIVE_PATH: "/${KEYCLOAK_ROUTE_PREFIX}"
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
@@ -62,13 +65,31 @@ services:
       - "traefik.enable=true"
       # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
       - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
+      # --- Services (same backend, different routers) ---
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
       - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
-      - "traefik.http.routers.keycloak.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}`)"
-      - "traefik.http.routers.keycloak.middlewares=compress-traefik@file,security-headers@file"
-      - "traefik.http.routers.keycloak.service=keycloak"
-      - "traefik.http.routers.keycloak.entrypoints=websecure"
-      - "traefik.http.routers.keycloak.tls=true"
+
+      # --- FRIENDLY LOGIN ROUTE (${HOST}.${DOMAIN}/login) ---
+      - "traefik.http.middlewares.keycloak_login_redirect.redirectregex.regex=^https?://${HOST}.${DOMAIN}/login/?$"
+      - "traefik.http.middlewares.keycloak_login_redirect.redirectregex.replacement=https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}/account/"
+      - "traefik.http.middlewares.keycloak_login_redirect.redirectregex.permanent=true"
+
+      - "traefik.http.routers.keycloak_login.rule=Host(`${HOST}.${DOMAIN}`) && (Path(`/login`) || Path(`/login/`))"
+      - "traefik.http.routers.keycloak_login.middlewares=keycloak_login_redirect,compress-traefik@file,security-headers@file"
+      - "traefik.http.routers.keycloak_login.service=keycloak"
+      - "traefik.http.routers.keycloak_login.entrypoints=websecure"
+      - "traefik.http.routers.keycloak_login.tls=true"
+
+      # --- PUBLIC REALM ROUTER (host: ${HOST}.${DOMAIN}, path-based) ---
+      # Only expose the OpenTofu-managed realm + shared static resources.
+      # This prevents routing to /realms/master/* (and avoids exposing /admin/*).
+      - "traefik.http.routers.keycloak_public.rule=Host(`${HOST}.${DOMAIN}`) && (PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}`) || PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/resources/`))"
+      - "traefik.http.routers.keycloak_public.middlewares=compress-traefik@file,security-headers@file"
+      - "traefik.http.routers.keycloak_public.service=keycloak"
+      - "traefik.http.routers.keycloak_public.entrypoints=websecure"
+      - "traefik.http.routers.keycloak_public.tls=true"
+
+      # --- Health ---
       - "traefik.http.services.keycloak_health.loadbalancer.server.port=9000"
       - "traefik.http.services.keycloak_health.loadbalancer.passhostheader=true"
       - "traefik.http.routers.keycloak_health.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/health`)"

@@ -1,0 +1,20 @@
+secrets:
+  whoami-external_oauth_cookie_secret:
+    file: ${OAUTH_CONFIG_DIR}/whoami-external/oauth_cookie_secret
+  whoami-external_oauth_client_secret:
+    file: ${OAUTH_CONFIG_DIR}/whoami-external/oauth_client_secret
+services:
+  whoami-external-oauth2-proxy:
+    hostname: oauth2-proxy-whoami-external
+    extends:
+      file: ../auth/proxy/compose.oauth2_proxy_base.yaml
+      service: oauth2-proxy-base
+    secrets:
+      - whoami-external_oauth_cookie_secret
+      - whoami-external_oauth_client_secret
+    labels:
+      - "traefik.http.routers.whoami-external-oauth2-proxy.service=whoami-external-oauth2-proxy"
+      - "traefik.http.services.whoami-external-oauth2-proxy.loadbalancer.server.port=4180"
+      - "traefik.http.services.whoami-external-oauth2-proxy.loadbalancer.passhostheader=true"
+    volumes:
+      - "${OAUTH_CONFIG_DIR}/whoami-external/oauth2-proxy.cfg:/oauth2-proxy.cfg"

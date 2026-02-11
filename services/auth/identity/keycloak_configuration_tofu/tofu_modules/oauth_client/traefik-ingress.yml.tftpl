@@ -1,0 +1,48 @@
+http:
+  middlewares:
+    oauth-auth-${application_id}:
+      forwardAuth:
+        address: http://oauth2-proxy-${application_id}:4180/apps/${application_id}/oauth/auth
+        trustForwardHeader: true
+        authResponseHeaders:
+          - Authorization
+          - X-Auth-Request-Access-Token
+    oauth-errors-${application_id}:
+      errors:
+        status:
+          - "401-403"
+        service: ${application_id}-oauth2-proxy@docker
+        query: /apps/${application_id}/oauth2/sign_in?rd={url}
+
+  routers:
+    ${application_id}-oauth2-proxy:
+      service: ${application_id}-oauth2-proxy@docker
+      rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}/oauth/`)
+      tls: true
+      entrypoints:
+        - websecure
+      middlewares:
+        - compress-traefik
+        - append-slash
+        - security-headers
+    ${application_id}:
+      rule: Host(`${public_host}`)&&(Path(`/apps/${application_id}`)||PathPrefix(`/apps/${application_id}/`))&&!PathPrefix(`/apps/${application_id}/oauth/`)
+      tls: true
+      service: ${application_id}%{ if length(urls) == 0 }@docker%{ endif }
+      entrypoints:
+        - websecure
+      middlewares:
+        - compress-traefik
+        - append-slash
+        - security-headers
+        - oauth-auth-${application_id}
+        - oauth-errors-${application_id}
+%{ if length(urls) > 0 ~}
+  services:
+    ${application_id}:
+      loadBalancer:
+        servers:
+%{ for url in urls ~}
+          - url: ${url}
+%{ endfor ~}
+%{ endif ~}

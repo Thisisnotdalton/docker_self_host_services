@@ -1,0 +1,51 @@
+services:
+  oauth2-proxy-base:
+    image: quay.io/oauth2-proxy/oauth2-proxy:${OAUTH2_PROXY_IMAGE_TAG}
+    environment:
+      HOST: ${HOST}
+      DOMAIN: ${DOMAIN}
+      OIDC_ISSUER_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
+      #      APPLICATION_ID: ${APPLICATION_ID}
+      #      OAUTH_COOKIE_SECRET_FILE: ${OAUTH_COOKIE_SECRET}
+      #      APPLICATION_CLIENT_SECRET_FILE: ${APPLICATION_CLIENT_SECRET}
+      EMAIL_DOMAIN: "*"
+    command: >
+      --config "/oauth2-proxy.cfg"
+#    volumes:
+#      - "./oauth2_proxy/oauth2-proxy-traefik.cfg:/oauth2-proxy.cfg"
+    labels:
+      - "traefik.enable=true"
+      # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
+      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
+# These will need to vary per app:
+#      - "traefik.http.routers.oauth2-proxy.rule=Host(`${HOST}.${DOMAIN}`)&&PathPrefix(`/oauth2/`)"
+#      - "traefik.http.routers.oauth2-proxy.entrypoints=websecure"
+#      # Define the internal container port for routing
+#      - "traefik.http.services.oauth2-proxy.loadbalancer.server.port=4180"
+#      # Enable TLS on this router
+#      - "traefik.http.routers.oauth2-proxy.tls=true"
+#      # Use Let's Encrypt for TLS management
+##      - "traefik.http.routers.oauth2-proxy.tls.certresolver=letsencrypt"
+#      # Apply middlewares
+#      - "traefik.http.routers.oauth2-proxy.middlewares=compress-traefik@file,security-headers@file"
+#      # Define middlewares for oauth apps
+#      - "traefik.http.middlewares.oauth-auth.forwardAuth.address=https://${HOST}.${DOMAIN}/oauth2/"
+#      - "traefik.http.middlewares.oauth-auth.forwardAuth.trustForwardHeader=true"
+#      - "traefik.http.middlewares.oauth-errors.errors.status=401-403"
+#      - "traefik.http.middlewares.oauth-errors.errors.query=/oauth2/sign_in?rd={url}"
+#      - "traefik.http.middlewares.oauth-errors.errors.service=oauth2-proxy"
+    depends_on:
+      traefik:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - keycloak
+      - traefik
+      - auth
+    healthcheck:
+      test: [ "CMD", "wget", "--tries=1", "--spider", "http://localhost:4180/ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s

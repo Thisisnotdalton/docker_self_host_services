@@ -37,5 +37,11 @@ environments:
       - name: KEYCLOAK_ROUTE_PREFIX
         value: auth
 
-      - name: KEYCLOAK_REALM_NAME
+      - name: KEYCLOAK_REALM
         value: pukiru_online
+
+      - name: tofu_state_encryption_passphrase
+        value:
+          bitwarden:
+             entry: pukiru-online-tofu_state_encryption_passphrase
+             field: login.password

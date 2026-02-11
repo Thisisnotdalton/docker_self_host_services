@@ -1,0 +1,39 @@
+services:
+  keycloak_tofu_apply:
+    build: ./keycloak_configuration_tofu
+    working_dir: /work
+    volumes:
+      - tofu_state:/work
+      - ${OAUTH_CONFIG_DIR}:/work/proxy_config
+      - ${TRAEFIK_CONFIG_DIR}:/work/traefik_config
+      - ../../../tofu_variables.auto.tfvars.json:/work/terraform.auto.tfvars.json:ro
+    environment:
+      TF_VAR_keycloak_internal_url: ${KEYCLOAK_URL:-http://keycloak:8080/${KEYCLOAK_ROUTE_PREFIX}}
+      TF_VAR_keycloak_public_url: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}"
+      TF_VAR_keycloak_username: ${KEYCLOAK_ADMIN}
+      TF_VAR_keycloak_password: ${KEYCLOAK_ADMIN_PASSWORD}
+      TF_VAR_keycloak_realm: ${KEYCLOAK_REALM}
+      TF_VAR_registration_allowed: ${REGISTRATION_ALLOWED:-true}
+      TF_VAR_smtp_host: ${SMTP_HOST}
+      TF_VAR_smtp_port: ${SMTP_PORT}
+      TF_VAR_smtp_username: ${SMTP_USERNAME}
+      TF_VAR_smtp_password: ${SMTP_PASSWORD}
+      TF_VAR_smtp_from_email: "keycloak@${SMTP_FROM_EMAIL_DOMAIN}"
+      TF_VAR_state_encryption_passphrase: ${tofu_state_encryption_passphrase}
+      TF_VAR_oauth_application_base_url: "https://${HOST}.${DOMAIN}/apps"
+      TF_VAR_ssl_insecure_skip_verify: "${OAUTH_SSL_INSECURE_SKIP_VERIFY:-false}"
+      TF_VAR_cookie_domain: "${HOST}.${DOMAIN}"
+    networks:
+      - keycloak
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    command: >
+      sh -lc "
+        cp -a /tofu_modules/. /work/ &&
+        tofu -chdir=/work init -upgrade -input=false &&
+        tofu -chdir=/work apply -auto-approve -input=false
+      "
+    restart: "no"
+volumes:
+  tofu_state:

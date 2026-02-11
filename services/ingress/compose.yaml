@@ -30,13 +30,11 @@ services:
       - "traefik.http.services.dashboard.loadbalancer.passhostheader=true"
     environment:
       CF_DNS_API_TOKEN: "${TRAEFIK_ACME_dns_api_secret:-}"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik_configuration/:/etc/traefik/dynamic
-      - traefik-certificates:/etc/traefik/acme
     networks:
-      - traefik
-      - auth
+      traefik:
+        aliases:
+          - "${HOST}.${DOMAIN}"
+      auth:
     ports:
       - "80:80"
       - "443:443"
@@ -47,3 +45,8 @@ services:
       retries: 3
       start_period: 5s
     restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/etc/traefik/acme
+      - ${TRAEFIK_CONFIG_DIR}:/etc/traefik/dynamic/
+      - ./traefik_configuration/middlewares.yml:/etc/traefik/dynamic/middlewares.yml

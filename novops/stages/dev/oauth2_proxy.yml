@@ -1,0 +1,11 @@
+environments:
+  dev:
+    variables:
+      - name: OAUTH2_PROXY_IMAGE_TAG
+        value: "v7.13.0-alpine"
+
+      - name: OAUTH_CONFIG_DIR
+        value: "~/docker-services-config/dev/oauth2-proxy/"
+
+      - name: OAUTH_SSL_INSECURE_SKIP_VERIFY
+        value: "true"

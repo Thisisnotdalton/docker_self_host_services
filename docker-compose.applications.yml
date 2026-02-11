@@ -1,4 +1,4 @@
 include:
   - services/applications/whoami-compose.yaml
+  - services/applications/whoami-external-compose.yaml
   - services/applications/vaultwarden-compose.yaml
-  - services/auth/proxy/compose.yaml

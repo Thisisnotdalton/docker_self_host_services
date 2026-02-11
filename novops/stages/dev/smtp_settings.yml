@@ -1,0 +1,26 @@
+environments:
+  dev:
+    variables:
+      - name: SMTP_HOST
+        value: mail.smtp2go.com
+
+      - name: SMTP_PORT
+        value: "2525"
+
+      - name: SMTP_SECURITY
+        value: starttls
+
+      - name: SMTP_FROM_EMAIL_DOMAIN
+        value: pukiru.online
+
+      - name: SMTP_USERNAME
+        value:
+          bitwarden:
+            entry: pukiru-online-smtp2go
+            field: login.username
+
+      - name: SMTP_PASSWORD
+        value:
+          bitwarden:
+            entry: pukiru-online-smtp2go
+            field: login.password
