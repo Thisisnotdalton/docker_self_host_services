@@ -26,7 +26,7 @@ http:
         - append-slash
         - security-headers
     ${application_id}:
-      rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}/`)&&!PathPrefix(`/apps/${application_id}/oauth/`)
+      rule: Host(`${public_host}`)&&(Path(`/apps/${application_id}`)||PathPrefix(`/apps/${application_id}/`))&&!PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
       service: ${application_id}%{ if length(urls) == 0 }@docker%{ endif }
       entrypoints:
