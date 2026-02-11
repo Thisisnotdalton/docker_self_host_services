@@ -1,5 +1,5 @@
 # Script Kitties Club House
-This is a repository to simplify the process of deploying a series of docker containers serving applications with a common identity provider. All applications are served behind a Traefik reverse proxy and use OAuth2 to authenticate users, which managed by Keycloak.
+This is a repository to simplify the process of deploying a series of docker containers serving applications with a common identity provider. All applications are served behind a Traefik reverse proxy and use OAuth2 to authenticate users, which are managed by Keycloak.
 
 ## Usage
 
