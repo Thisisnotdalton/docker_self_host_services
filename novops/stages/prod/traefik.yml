@@ -5,7 +5,7 @@ environments:
         value: docker
 
       - name: DOMAIN
-        value: pukiru.online
+        value: scriptkitties.club
 
       - name: TRAEFIK_IMAGE_TAG
         value: "traefik:v3.6.7"
@@ -22,8 +22,11 @@ environments:
       - name: TRAEFIK_ACME_dns_api_secret
         value:
           bitwarden:
-            entry: pukiru-online-cloudflare_dns_secret
+            entry: scriptkitties-club-cloudflare_dns_secret
             field: login.password
 
       - name: TRAEFIK_ACME_EMAIL
-        value: dalton@pukiru.games
+        value:
+          bitwarden:
+            entry: scriptkitties-club-acme_email
+            field: login.username
