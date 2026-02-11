@@ -12,7 +12,7 @@ To use this repository, follow these steps:
     * 2.3. [oauth2_proxy.yml](novops/stages/prod/oauth2_proxy.yml)
     * 2.4. [smtp_settings.yml](novops/stages/prod/smtp_settings.yml)
     * 2.5. [vaultwarden.yml](novops/stages/prod/vaultwarden.yml)
-3. Modify the tof_variables.auto.tfvars file to suit your needs if you would like to integrate other services behind the reverse proxy. See the [variables.tofu](services/auth/identity/keycloak_configuration_tofu/tofu_modules/variables.tofu) file for a list of variables.
+3. Modify the [tofu_variables.auto.tfvars.json](tofu_variables.auto.tfvars.json) file to suit your needs if you would like to integrate other services behind the reverse proxy. See the [variables.tofu](services/auth/identity/keycloak_configuration_tofu/tofu_modules/variables.tofu) file for a list of variables.
 4. If wanting to deploy with the `prod` environment, set the environment variable STAGE=prod: `export STAGE=prod`
 5. Load Novops secrets in shell from Bitwarden using the nix flake: `nix develop`. Enter your Bitwarden password when prompted.
 6. Deploy the stack using make: `make deploy`. Use `make help` for other commands.
