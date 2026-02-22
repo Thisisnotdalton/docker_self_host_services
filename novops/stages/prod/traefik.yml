@@ -7,6 +7,12 @@ environments:
       - name: DOMAIN
         value: scriptkitties.club
 
+      - name: UPSTREAM_DNS
+        value: 192.168.132.1
+
+      - name: SERVER_IPv4
+        value: 192.168.132.146
+
       - name: TRAEFIK_IMAGE_TAG
         value: "traefik:v3.6.7"
 
