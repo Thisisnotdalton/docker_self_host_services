@@ -91,8 +91,14 @@ variable "application_servers" {
   default = {
     "whoami" : [""]
     "vaultwarden" : [""]
-    "whoami-external" : [
-      "https://docker.localhost/apps/whoami"
-    ]
+    "vaultwarden_sso": [""]
+  }
+}
+
+variable "application_extra_redirect_urls" {
+  type = map(list(string))
+  description = "Optional additional redirect urls for oauth clients."
+  default = {
+    "vaultwarden_sso": [""]
   }
 }

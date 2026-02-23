@@ -10,13 +10,13 @@ environments:
       - name: KEYCLOAK_POSTGRES_USER
         value:
           bitwarden:
-            entry: pukiru-online-keycloak_postgres_user
+            entry: scriptkitties-club-keycloak_postgres_user
             field: login.username
 
       - name: KEYCLOAK_POSTGRES_PASSWORD
         value:
           bitwarden:
-            entry: pukiru-online-keycloak_postgres_user
+            entry: scriptkitties-club-keycloak_postgres_user
             field: login.password
 
       - name: KEYCLOAK_IMAGE_TAG
@@ -25,23 +25,23 @@ environments:
       - name: KEYCLOAK_ADMIN
         value:
           bitwarden:
-            entry: pukiru-online-keycloak_admin
+            entry: scriptkitties-club-keycloak_admin
             field: login.username
 
       - name: KEYCLOAK_ADMIN_PASSWORD
         value:
           bitwarden:
-            entry: pukiru-online-keycloak_admin
+            entry: scriptkitties-club-keycloak_admin
             field: login.password
 
       - name: KEYCLOAK_ROUTE_PREFIX
         value: auth
 
       - name: KEYCLOAK_REALM
-        value: pukiru_online
+        value: scriptkitties_club
 
       - name: tofu_state_encryption_passphrase
         value:
           bitwarden:
-             entry: pukiru-online-tofu_state_encryption_passphrase
+             entry: scriptkitties-club-tofu_state_encryption_passphrase
              field: login.password

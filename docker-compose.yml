@@ -1,5 +1,6 @@
 # Configuration largely adapted from:
 # https://github.com/heyvaldemar/vaultwarden-traefik-letsencrypt-docker-compose
 include:
+  - services/dns/coredns-compose.yaml
   - services/ingress/compose.yaml
   - services/auth/identity/compose.yaml

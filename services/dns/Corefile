@@ -1,0 +1,11 @@
+. {
+    hosts {
+        {$SERVER_IP} {$SERVER_NAME}
+        fallthrough
+    }
+
+    forward . {$UPSTREAM_DNS}
+    cache 30
+    whoami
+    errors
+}

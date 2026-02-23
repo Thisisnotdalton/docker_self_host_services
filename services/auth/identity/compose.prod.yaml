@@ -1,0 +1,7 @@
+services:
+  keycloak:
+    labels:
+      # --- PUBLIC REALM ROUTER (host: ${HOST}.${DOMAIN}, path-based) ---
+      # Only expose the OpenTofu-managed realm + shared static resources.
+      # This prevents routing to /realms/master/* (and avoids exposing /admin/*).
+      - "traefik.http.routers.keycloak_public.rule=Host(`${HOST}.${DOMAIN}`) && (PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}`) || PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/resources/`))"

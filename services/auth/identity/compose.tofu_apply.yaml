@@ -37,3 +37,4 @@ services:
     restart: "no"
 volumes:
   tofu_state:
+    name:  "${HOST}.${DOMAIN}-keycloak_opentofu_state"

@@ -34,7 +34,7 @@ WAIT_KEYCLOAK_SCRIPT ?= $(CURDIR)/services/auth/identity/wait_for_keycloak.sh
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z0-9_.-]+:.*##/ {printf "  %-20s %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
-deploy: up-core down wait-keycloak up-apps ## Phase 1 -> 2 -> 3 deployment
+deploy: up-core wait-keycloak down up-apps ## Phase 1 -> 2 -> 3 deployment
 up: deploy ## Alias for deploy
 up-core: ## Phase 1: start core services (traefik/keycloak/etc.)
 	$(DC_CORE) up -d

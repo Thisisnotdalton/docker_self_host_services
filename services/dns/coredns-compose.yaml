@@ -1,0 +1,12 @@
+services:
+  coredns:
+    image: coredns/coredns:1.14.1
+    restart: always
+    environment:
+      SERVER_IP: "${SERVER_IPv4}"
+      SERVER_NAME: "${HOST}.${DOMAIN}"
+      UPSTREAM_DNS: "${UPSTREAM_DNS}"
+    network_mode: "host"
+    command: -conf /etc/coredns/Corefile
+    volumes:
+      - ./Corefile:/etc/coredns/Corefile:ro

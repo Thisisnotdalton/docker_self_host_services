@@ -5,7 +5,7 @@ environments:
         value: "v7.13.0-alpine"
 
       - name: OAUTH_CONFIG_DIR
-        value: "~/docker-services-config/prod/oauth2-proxy/"
+        value: "~/docker-services-config/scriptkitties/prod/oauth2-proxy/"
 
       - name: OAUTH_SSL_INSECURE_SKIP_VERIFY
-        value: "true"
+        value: "false"

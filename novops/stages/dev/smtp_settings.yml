@@ -11,16 +11,16 @@ environments:
         value: starttls
 
       - name: SMTP_FROM_EMAIL_DOMAIN
-        value: pukiru.online
+        value: scriptkitties.club
 
       - name: SMTP_USERNAME
         value:
           bitwarden:
-            entry: pukiru-online-smtp2go
+            entry: scriptkitties-club-smtp2go
             field: login.username
 
       - name: SMTP_PASSWORD
         value:
           bitwarden:
-            entry: pukiru-online-smtp2go
+            entry: scriptkitties-club-smtp2go
             field: login.password

@@ -80,10 +80,6 @@ services:
       - "traefik.http.routers.keycloak_login.entrypoints=websecure"
       - "traefik.http.routers.keycloak_login.tls=true"
 
-      # --- PUBLIC REALM ROUTER (host: ${HOST}.${DOMAIN}, path-based) ---
-      # Only expose the OpenTofu-managed realm + shared static resources.
-      # This prevents routing to /realms/master/* (and avoids exposing /admin/*).
-      - "traefik.http.routers.keycloak_public.rule=Host(`${HOST}.${DOMAIN}`) && (PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}`) || PathPrefix(`/${KEYCLOAK_ROUTE_PREFIX}/resources/`))"
       - "traefik.http.routers.keycloak_public.middlewares=compress-traefik@file,security-headers@file"
       - "traefik.http.routers.keycloak_public.service=keycloak"
       - "traefik.http.routers.keycloak_public.entrypoints=websecure"
