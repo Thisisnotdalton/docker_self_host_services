@@ -13,9 +13,9 @@ variable "application_id" {
   type        = string
 }
 
-variable "callback_url" {
-  description = "The OAuth2 client redirect url after signing in."
-  type        = string
+variable "callback_urls" {
+  description = "The OAuth2 client redirect urls after signing in."
+  type        = list(string)
 }
 
 variable "proxy_config_output_directory" {

@@ -22,9 +22,7 @@ resource "keycloak_openid_client" "client" {
     rotation = time_rotating.rotate.rotation_rfc3339
   }
   standard_flow_enabled = true
-  valid_redirect_uris = [
-    var.callback_url
-  ]
+  valid_redirect_uris   = var.callback_urls
 }
 
 resource "random_bytes" "cookie_secret" {
@@ -50,7 +48,7 @@ locals {
       client_id                = keycloak_openid_client.client.client_id
       oidc_issuer_url          = var.oidc_issuer_url
       application_id           = local.application_id
-      redirect_url             = var.callback_url
+      redirect_url             = var.callback_urls[0]
       ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
       cookie_domain            = var.cookie_domain
     }
