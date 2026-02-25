@@ -85,13 +85,31 @@ variable "cookie_domain" {
   description = "The domain to assign to cookies."
 }
 
+variable "keycloak_roles" {
+  description = "Mapping of Keycloak role ids to descriptions."
+  type = map(string)
+  default = {
+    "admin" : "A user with this role should be provided access to admin panels for managing services.",
+    "trusted" : "A user with this role may be provided access to more services than a default user."
+  }
+}
+
+variable "group_roles" {
+  description = "Mapping of group ids to lists of role ids to assign to that group."
+  type = map(list(string))
+  default = {
+    "admin" : ["admin", "trusted"],
+    "trusted" : ["trusted"]
+  }
+}
+
 variable "application_servers" {
   type = map(list(string))
   description = "Mapping of unique application ids to external servers to assign as load balancers. A list with an empty string is sufficient for container services which apply their own Traefik labels."
   default = {
     "whoami" : [""]
     "vaultwarden" : [""]
-    "vaultwarden_sso": [""]
+    "vaultwarden_sso" : [""]
   }
 }
 
@@ -99,7 +117,7 @@ variable "application_extra_redirect_urls" {
   type = map(list(string))
   description = "Optional additional redirect urls for oauth clients."
   default = {
-    "vaultwarden_sso": [""]
+    "vaultwarden_sso" : [""]
   }
 }
 
@@ -107,6 +125,6 @@ variable "application_proxy_role_restrictions" {
   type = map(list(string))
   description = "Optional role requirements for oauth clients."
   default = {
-    "whoami-admin": ["admin"]
+    "whoami-admin" : ["admin"]
   }
 }

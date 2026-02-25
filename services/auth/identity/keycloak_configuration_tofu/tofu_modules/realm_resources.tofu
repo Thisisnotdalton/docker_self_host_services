@@ -18,3 +18,26 @@ resource "keycloak_realm" "realm" {
     starttls = true
   }
 }
+
+resource "keycloak_role" "realm_roles" {
+  for_each    = var.keycloak_roles
+  name        = each.key
+  realm_id    = keycloak_realm.realm.realm
+  description = each.value
+}
+
+resource "keycloak_group" "realm_groups" {
+  for_each = var.group_roles
+  name     = each.key
+  realm_id = keycloak_realm.realm.realm
+}
+
+resource "keycloak_group_roles" "realm_group_roles" {
+  for_each = var.group_roles
+  group_id = keycloak_group.realm_groups[each.key].id
+  realm_id = keycloak_realm.realm.realm
+  role_ids = [
+    for role_name in each.value :
+    keycloak_role.realm_roles[role_name].id
+  ]
+}
