@@ -102,3 +102,11 @@ variable "application_extra_redirect_urls" {
     "vaultwarden_sso": [""]
   }
 }
+
+variable "application_proxy_role_restrictions" {
+  type = map(list(string))
+  description = "Optional role requirements for oauth clients."
+  default = {
+    "whoami-admin": ["admin"]
+  }
+}

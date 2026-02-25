@@ -51,6 +51,7 @@ locals {
       redirect_url             = var.callback_urls[0]
       ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
       cookie_domain            = var.cookie_domain
+      allowed_roles            = var.allowed_roles
     }
   )
   traefik_config = templatefile(
@@ -58,7 +59,7 @@ locals {
     {
       public_host    = var.cookie_domain
       application_id = local.application_id
-      urls = local.load_balancers
+      urls           = local.load_balancers
     }
   )
 }

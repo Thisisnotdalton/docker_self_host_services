@@ -26,3 +26,6 @@ upstreams="static://202"
 # It can be activated only when traefik is not configure with
 # the error redirection middleware as this example.
 skip_provider_button=true
+%{ if length(allowed_roles) > 0 ~}
+allowed_roles=${jsonencode(allowed_roles)}
+%{ endif ~}

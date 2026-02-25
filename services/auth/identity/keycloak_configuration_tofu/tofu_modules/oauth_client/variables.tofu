@@ -44,3 +44,8 @@ variable "traefik_config_output_directory" {
   description = "The directory to write output traefik config files to."
   type        = string
 }
+
+variable "allowed_roles" {
+  description = "Optional list of string role names to restrict access to for this proxy."
+  type = list(string)
+}
