@@ -94,7 +94,7 @@ variable "keycloak_roles" {
   }
 }
 
-variable "group_roles" {
+variable "keycloak_group_roles" {
   description = "Mapping of group ids to lists of role ids to assign to that group."
   type = map(list(string))
   default = {
@@ -109,7 +109,6 @@ variable "application_servers" {
   default = {
     "whoami" : [""]
     "vaultwarden" : [""]
-    "vaultwarden_sso" : [""]
   }
 }
 
@@ -117,7 +116,7 @@ variable "application_extra_redirect_urls" {
   type = map(list(string))
   description = "Optional additional redirect urls for oauth clients."
   default = {
-    "vaultwarden_sso" : [""]
+    "whoami": ["https://also-accept-this-redirect"]
   }
 }
 
