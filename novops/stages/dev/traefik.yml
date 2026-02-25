@@ -17,7 +17,7 @@ environments:
         value: "traefik:v3.6.7"
 
       - name: TRAEFIK_LOG_LEVEL
-        value: INFO
+        value: DEBUG
 
       - name: TRAEFIK_DASHBOARD_ROUTE_PREFIX
         value: traefik
