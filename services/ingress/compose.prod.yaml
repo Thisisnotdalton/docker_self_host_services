@@ -50,5 +50,3 @@ services:
       - "--global.checknewversion=true"
       # Disable sending anonymous usage data to the Traefik maintainers
       - "--global.sendanonymoususage=false"
-    labels:
-      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
