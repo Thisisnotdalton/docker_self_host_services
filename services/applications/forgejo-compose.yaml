@@ -1,15 +1,39 @@
+secrets:
+  forgejo_oauth_cookie_secret:
+    file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_cookie_secret
+  forgejo_oauth_client_secret:
+    file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_client_secret
+
 networks:
   forgejo:
     external: false
 
 volumes:
   forgejo_postgres-data:
-    name:  "${HOST}.${DOMAIN}-forgejo_postgres-data"
+    name: "${HOST}.${DOMAIN}-forgejo_postgres-data"
   forgejo_data:
-    name:  "${HOST}.${DOMAIN}-forgejo_data"
+    name: "${HOST}.${DOMAIN}-forgejo_data"
 
 services:
+  forgejo-oauth2-proxy:
+    hostname: oauth2-proxy-forgejo
+    extends:
+      file: ../auth/proxy/compose.oauth2_proxy_base.yaml
+      service: oauth2-proxy-base
+    secrets:
+      - forgejo_oauth_cookie_secret
+      - forgejo_oauth_client_secret
+    labels:
+      - "traefik.http.routers.forgejo-oauth2-proxy.service=forgejo-oauth2-proxy"
+      - "traefik.http.services.forgejo-oauth2-proxy.loadbalancer.server.port=4180"
+      - "traefik.http.services.forgejo-oauth2-proxy.loadbalancer.passhostheader=true"
+    volumes:
+      - "${OAUTH_CONFIG_DIR}/forgejo/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+
   forgejo_server:
+    extends:
+      file: common.yaml
+      service: application
     image: codeberg.org/forgejo/forgejo:14
     container_name: forgejo
     volumes:
@@ -30,7 +54,14 @@ services:
       - "3000:3000"
       - "222:22"
     depends_on:
-      - forgejo_postgres
+      forgejo_postgres:
+        condition: service_healthy
+      forgejo-oauth2-proxy:
+        condition: service_healthy
+    labels:
+      - "traefik.http.routers.forgejo.service=forgejo"
+      - "traefik.http.services.forgejo.loadbalancer.server.port=80"
+      - "traefik.http.services.forgejo.loadbalancer.passhostheader=true"
 
   forgejo_postgres:
     image: postgres:14
