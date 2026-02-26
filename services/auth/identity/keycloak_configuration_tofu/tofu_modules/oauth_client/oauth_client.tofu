@@ -57,6 +57,10 @@ locals {
       allowed_roles            = var.allowed_roles
     }
   )
+
+  application_path_prefix_default = "(Path(\"/apps/${var.application_id}\")||PathPrefix(\"/apps/${var.application_id}\"))"
+  application_path_filter = length(var.traefik_path_condition) == 0? local.application_path_prefix_default : var.traefik_path_condition
+
   traefik_config = templatefile(
     "${path.module}/traefik-ingress.yml.tftpl",
     {
@@ -64,6 +68,7 @@ locals {
       application_id = local.application_id
       urls           = local.load_balancers
       service_id = local.service_id
+      application_path_filter = local.application_path_filter
     }
   )
 }

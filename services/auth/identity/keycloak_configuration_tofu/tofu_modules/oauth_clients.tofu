@@ -21,5 +21,6 @@ module "oauth_clients" {
   cookie_domain            = var.cookie_domain
   allowed_roles            = each.value.roles
   service_override         = each.value.service
+  traefik_path_condition   = each.value.traefik_path_condition
 }
 

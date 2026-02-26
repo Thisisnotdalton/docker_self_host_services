@@ -55,3 +55,9 @@ variable "service_override" {
   description = "Use to override the default service of <application_id>@docker."
   default = ""
 }
+
+variable "traefik_path_condition" {
+  type = string
+  default = ""
+  description = "Whether to add a path rule limiting to the /apps/<application_id>/ or use a specific condition override."
+}

@@ -18,9 +18,3 @@ services:
       - "traefik.http.services.traefik-dashboard-oauth2-proxy.loadbalancer.passhostheader=true"
     volumes:
       - "${OAUTH_CONFIG_DIR}/traefik-dashboard/oauth2-proxy.cfg:/oauth2-proxy.cfg"
-  traefik:
-    labels:
-      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"
-      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.services.traefik-dashboard.loadbalancer.passhostheader=true"
-      - "traefik.http.services.traefik-dashboard.loadbalancer.server.port=8080"

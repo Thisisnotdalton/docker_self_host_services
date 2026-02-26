@@ -15,9 +15,6 @@ volumes:
 services:
   traefik:
     image: ${TRAEFIK_IMAGE_TAG}
-    labels:
-      # Enable Traefik for this container
-      - "traefik.enable=true"
     environment:
       CF_DNS_API_TOKEN: "${TRAEFIK_ACME_dns_api_secret:-}"
     networks:
