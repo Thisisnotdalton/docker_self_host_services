@@ -8,7 +8,7 @@ module "oauth_clients" {
   source                          = "./oauth_client"
   for_each                        = var.oauth2_clients
   application_id                  = each.key
-  application_servers =           each.value.extra_redirect_urls
+  application_servers             = each.value.extra_redirect_urls
   keycloak_realm_id               = keycloak_realm.realm.realm
   proxy_config_output_directory   = local.proxy_config_output_directory
   traefik_config_output_directory = local.traefik_config_output_directory
@@ -19,6 +19,7 @@ module "oauth_clients" {
   )
   ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
   cookie_domain            = var.cookie_domain
-  allowed_roles =  each.value.roles
+  allowed_roles            = each.value.roles
+  service_override         = each.value.service
 }
 

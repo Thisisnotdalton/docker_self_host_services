@@ -28,7 +28,7 @@ http:
     ${application_id}:
       rule: Host(`${public_host}`)&&(Path(`/apps/${application_id}`)||PathPrefix(`/apps/${application_id}/`))&&!PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
-      service: ${application_id}%{ if length(urls) == 0 }@docker%{ endif }
+      service: ${service_id}
       entrypoints:
         - websecure
       middlewares:

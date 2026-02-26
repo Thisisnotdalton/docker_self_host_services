@@ -42,6 +42,9 @@ resource "local_file" "oauth_application_secret" {
 }
 
 locals {
+  service_id_suffix = length(local.load_balancers) > 0? "" : "@docker"
+  service_id_default = "${var.application_id}${local.service_id_suffix}"
+  service_id = length(var.service_override) > 0? var.service_override : local.service_id_default
   proxy_config = templatefile(
     "${path.module}/oauth2-proxy.cfg.tftpl",
     {
@@ -60,6 +63,7 @@ locals {
       public_host    = var.cookie_domain
       application_id = local.application_id
       urls           = local.load_balancers
+      service_id = local.service_id
     }
   )
 }

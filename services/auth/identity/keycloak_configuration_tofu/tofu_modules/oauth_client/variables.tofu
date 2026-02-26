@@ -49,3 +49,9 @@ variable "allowed_roles" {
   description = "Optional list of string role names to restrict access to for this proxy."
   type = list(string)
 }
+
+variable "service_override" {
+  type = string
+  description = "Use to override the default service of <application_id>@docker."
+  default = ""
+}
