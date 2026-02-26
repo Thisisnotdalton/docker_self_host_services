@@ -51,4 +51,5 @@ services:
       # Disable sending anonymous usage data to the Traefik maintainers
       - "--global.sendanonymoususage=false"
     labels:
-      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+      - "traefik.tls.stores.default.defaultgeneratedcert.resolver=letsencrypt"
+      - "traefik.tls.stores.default.defaultgeneratedcert.domain.main=${HOST}.${DOMAIN}"

@@ -58,7 +58,7 @@ locals {
     }
   )
 
-  application_path_prefix_default = "(Path(\"/apps/${var.application_id}\")||PathPrefix(\"/apps/${var.application_id}\"))"
+  application_path_prefix_default = "(Path(`/apps/${var.application_id}`)||PathPrefix(`/apps/${var.application_id}/`))"
   application_path_filter = length(var.traefik_path_condition) == 0? local.application_path_prefix_default : var.traefik_path_condition
 
   traefik_config = templatefile(
