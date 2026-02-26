@@ -15,19 +15,6 @@ volumes:
 services:
   traefik:
     image: ${TRAEFIK_IMAGE_TAG}
-    labels:
-      # Enable Traefik for this container
-      - "traefik.enable=true"
-      # A router to expose the Traefik dashboard
-      - "traefik.http.routers.dashboard.rule=Host(`${HOST}.${DOMAIN}`)"
-      # Middlewares:
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      # Specify the internal server port to the dashboard service
-      - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
-      # Pass the original Host header to the backend
-      - "traefik.http.services.dashboard.loadbalancer.passhostheader=true"
     environment:
       CF_DNS_API_TOKEN: "${TRAEFIK_ACME_dns_api_secret:-}"
     networks:

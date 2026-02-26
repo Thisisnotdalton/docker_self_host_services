@@ -44,3 +44,20 @@ variable "traefik_config_output_directory" {
   description = "The directory to write output traefik config files to."
   type        = string
 }
+
+variable "allowed_roles" {
+  description = "Optional list of string role names to restrict access to for this proxy."
+  type = list(string)
+}
+
+variable "service_override" {
+  type = string
+  description = "Use to override the default service of <application_id>@docker."
+  default = ""
+}
+
+variable "traefik_path_condition" {
+  type = string
+  default = ""
+  description = "Whether to add a path rule limiting to the /apps/<application_id>/ or use a specific condition override."
+}

@@ -1,0 +1,20 @@
+secrets:
+  traefik-dashboard_oauth_cookie_secret:
+    file: ${OAUTH_CONFIG_DIR}/traefik-dashboard/oauth_cookie_secret
+  traefik-dashboard_oauth_client_secret:
+    file: ${OAUTH_CONFIG_DIR}/traefik-dashboard/oauth_client_secret
+services:
+  traefik-dashboard-oauth2-proxy:
+    hostname: oauth2-proxy-traefik-dashboard
+    extends:
+      file: ../auth/proxy/compose.oauth2_proxy_base.yaml
+      service: oauth2-proxy-base
+    secrets:
+      - traefik-dashboard_oauth_cookie_secret
+      - traefik-dashboard_oauth_client_secret
+    labels:
+      - "traefik.http.routers.traefik-dashboard-oauth2-proxy.service=traefik-dashboard-oauth2-proxy"
+      - "traefik.http.services.traefik-dashboard-oauth2-proxy.loadbalancer.server.port=4180"
+      - "traefik.http.services.traefik-dashboard-oauth2-proxy.loadbalancer.passhostheader=true"
+    volumes:
+      - "${OAUTH_CONFIG_DIR}/traefik-dashboard/oauth2-proxy.cfg:/oauth2-proxy.cfg"

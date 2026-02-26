@@ -45,3 +45,6 @@ environments:
           bitwarden:
              entry: scriptkitties-club-tofu_state_encryption_passphrase
              field: login.password
+
+      - name: KEYCLOAK_LOG_LEVEL
+        value: WARNING

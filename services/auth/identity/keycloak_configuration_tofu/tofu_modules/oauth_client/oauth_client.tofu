@@ -42,6 +42,9 @@ resource "local_file" "oauth_application_secret" {
 }
 
 locals {
+  service_id_suffix = length(local.load_balancers) > 0? "" : "@docker"
+  service_id_default = "${var.application_id}${local.service_id_suffix}"
+  service_id = length(var.service_override) > 0? var.service_override : local.service_id_default
   proxy_config = templatefile(
     "${path.module}/oauth2-proxy.cfg.tftpl",
     {
@@ -51,14 +54,21 @@ locals {
       redirect_url             = var.callback_urls[0]
       ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
       cookie_domain            = var.cookie_domain
+      allowed_roles            = var.allowed_roles
     }
   )
+
+  application_path_prefix_default = "(Path(\"/apps/${var.application_id}\")||PathPrefix(\"/apps/${var.application_id}\"))"
+  application_path_filter = length(var.traefik_path_condition) == 0? local.application_path_prefix_default : var.traefik_path_condition
+
   traefik_config = templatefile(
     "${path.module}/traefik-ingress.yml.tftpl",
     {
       public_host    = var.cookie_domain
       application_id = local.application_id
-      urls = local.load_balancers
+      urls           = local.load_balancers
+      service_id = local.service_id
+      application_path_filter = local.application_path_filter
     }
   )
 }
