@@ -61,3 +61,9 @@ variable "traefik_path_condition" {
   default = ""
   description = "Whether to add a path rule limiting to the /apps/<application_id>/ or use a specific condition override."
 }
+
+variable "strip_path_prefix" {
+  type = bool
+  description = "Whether to add a middleware which strips the path /apps/application_id/ automatically."
+  default = false
+}

@@ -13,7 +13,12 @@ http:
           - "401-403"
         service: ${application_id}-oauth2-proxy@docker
         query: /apps/${application_id}/oauth2/sign_in?rd={url}
-
+%{ if strip_path_prefix ~}
+    strip-prefix-${application_id}:
+        stripPrefix:
+            prefixes:
+              - /apps/${application_id}
+%{ endif ~}
   routers:
     ${application_id}-oauth2-proxy:
       service: ${application_id}-oauth2-proxy@docker
@@ -37,6 +42,9 @@ http:
         - security-headers
         - oauth-auth-${application_id}
         - oauth-errors-${application_id}
+%{ if strip_path_prefix ~}
+        - strip-prefix-${application_id}
+%{ endif ~}
 %{ if length(urls) > 0 ~}
   services:
     ${application_id}:

@@ -22,5 +22,6 @@ module "oauth_clients" {
   allowed_roles            = each.value.roles
   service_override         = each.value.service
   traefik_path_condition   = each.value.traefik_path_condition
+  strip_path_prefix        = each.value.strip_path_prefix
 }
 

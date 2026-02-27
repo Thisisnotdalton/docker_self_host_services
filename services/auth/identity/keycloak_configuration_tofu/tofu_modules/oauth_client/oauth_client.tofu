@@ -69,6 +69,7 @@ locals {
       urls           = local.load_balancers
       service_id = local.service_id
       application_path_filter = local.application_path_filter
+      strip_path_prefix = var.strip_path_prefix
     }
   )
 }
