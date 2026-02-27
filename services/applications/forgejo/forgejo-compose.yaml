@@ -73,8 +73,8 @@ services:
     networks:
       - forgejo
       - traefik
-#    ports:
-#      - "222:22"
+    ports:
+      - "22:22"
     depends_on:
       forgejo_postgres:
         condition: service_healthy
