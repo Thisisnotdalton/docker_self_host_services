@@ -67,3 +67,8 @@ variable "strip_path_prefix" {
   description = "Whether to add a middleware which strips the path /apps/application_id/ automatically."
   default = false
 }
+variable "sso_client_redirect_url" {
+  type = string
+  description = "Whether to add a another OAuth2 client for SSO which redirects to the provided url."
+  default = ""
+}

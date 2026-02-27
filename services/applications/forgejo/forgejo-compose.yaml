@@ -3,10 +3,8 @@ secrets:
     file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_cookie_secret
   forgejo_oauth_client_secret:
     file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_client_secret
-  forgejo-sso_oauth_cookie_secret:
-    file: ${OAUTH_CONFIG_DIR}/forgejo-sso/oauth_cookie_secret
-  forgejo-sso_oauth_client_secret:
-    file: ${OAUTH_CONFIG_DIR}/forgejo-sso/oauth_client_secret
+  forgejo_oauth_sso_client_secret:
+    file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_sso_client_secret
 
 networks:
   forgejo:
@@ -44,10 +42,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./configure_oauth.sh:/scripts/configure_oauth.sh:ro
     secrets:
-      - forgejo-sso_oauth_client_secret
+      - forgejo_oauth_sso_client_secret
     entrypoint: >
       sh -c "
-        export CLIENT_SECRET=$(cat /run/secrets/forgejo-sso_oauth_client_secret)
+        export CLIENT_SECRET=$(cat /run/secrets/forgejo_oauth_sso_client_secret)
         cp /scripts/configure_oauth.sh configure_oauth.sh;
         chmod +x configure_oauth.sh
         su -c './configure_oauth.sh' git

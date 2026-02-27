@@ -25,6 +25,20 @@ resource "keycloak_openid_client" "client" {
   valid_redirect_uris   = var.callback_urls
 }
 
+resource "keycloak_openid_client" "sso-client" {
+  realm_id    = var.keycloak_realm_id
+  client_id   = "${local.application_id}-sso-client"
+  name        = "${local.application_id} SSO client"
+  enabled     = true
+  access_type = "CONFIDENTIAL"
+  client_secret_regenerate_when_changed = {
+    rotation = time_rotating.rotate.rotation_rfc3339
+  }
+  standard_flow_enabled = true
+  valid_redirect_uris = [var.sso_client_redirect_url]
+  count                 = length(var.sso_client_redirect_url) > 0 ? 1 : 0
+}
+
 resource "random_bytes" "cookie_secret" {
   length = 32
 }
@@ -39,6 +53,13 @@ resource "local_file" "oauth_application_secret" {
   filename        = "${local.proxy_config_output_path}/oauth_client_secret"
   content_base64 = base64encode(keycloak_openid_client.client.client_secret)
   file_permission = "0600"
+}
+
+resource "local_file" "oauth_application_sso_secret" {
+  filename        = "${local.proxy_config_output_path}/oauth_sso_client_secret"
+  content_base64 = base64encode(keycloak_openid_client.sso-client[0].client_secret)
+  file_permission = "0600"
+  count                 = length(var.sso_client_redirect_url) > 0 ? 1 : 0
 }
 
 locals {
