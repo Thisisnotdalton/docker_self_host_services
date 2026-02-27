@@ -41,3 +41,34 @@ resource "keycloak_group_roles" "realm_group_roles" {
     keycloak_role.realm_roles[role_name].id
   ]
 }
+
+resource "keycloak_openid_client_scope" "groups" {
+  realm_id = keycloak_realm.realm.realm
+  name        = "groups"
+  description = "Group membership scope"
+  include_in_token_scope = true
+}
+
+resource "keycloak_openid_group_membership_protocol_mapper" "groups_mapper" {
+  realm_id        = keycloak_realm.realm.realm
+  client_scope_id = keycloak_openid_client_scope.groups.id
+
+  name              = "groups"
+  claim_name        = "groups"
+  full_path         = false
+
+  add_to_id_token     = true
+  add_to_access_token = true
+  add_to_userinfo     = true
+}
+
+resource "keycloak_realm_default_client_scopes" "realm_defaults" {
+  realm_id = keycloak_realm.realm.realm
+
+  default_scopes = [
+    "profile",
+    "email",
+    "roles",
+    keycloak_openid_client_scope.groups.name
+  ]
+}
