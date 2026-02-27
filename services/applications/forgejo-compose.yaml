@@ -30,12 +30,11 @@ services:
     volumes:
       - "${OAUTH_CONFIG_DIR}/forgejo/oauth2-proxy.cfg:/oauth2-proxy.cfg"
 
-  forgejo_server:
+  forgejo:
     extends:
       file: common.yaml
       service: application
-    image: codeberg.org/forgejo/forgejo:14
-    container_name: forgejo
+    image: "${FORGEJO_IMAGE_TAG}"
     volumes:
       - forgejo_data:/data
       - /etc/localtime:/etc/localtime:ro
@@ -44,15 +43,19 @@ services:
       USER_GID: 1000
       FORGEJO__database__DB_TYPE: postgres
       FORGEJO__database__HOST: "forgejo_postgres:5432"
-      FORGEJO__database__NAME: forgejo
-      FORGEJO__database__USER: forgejo
-      FORGEJO__database__PASSWD: forgejo
+      FORGEJO__database__NAME: "${FORGEJO_POSTGRES_DB}"
+      FORGEJO__database__USER: "${FORGEJO_POSTGRES_USER}"
+      FORGEJO__database__PASSWD: "${FORGEJO_POSTGRES_PASSWORD}"
+#      FORGEJO__server__USE_PROXY_PROTOCOL: "true"
+#      FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}/apps/foregjo"
+      FORGEJO__server__ROOT_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
     restart: always
     networks:
       - forgejo
-    ports:
-      - "3000:3000"
-      - "222:22"
+      - traefik
+#    ports:
+#      - "3000:3000"
+#      - "222:22"
     depends_on:
       forgejo_postgres:
         condition: service_healthy
@@ -60,21 +63,21 @@ services:
         condition: service_healthy
     labels:
       - "traefik.http.routers.forgejo.service=forgejo"
-      - "traefik.http.services.forgejo.loadbalancer.server.port=80"
+      - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
       - "traefik.http.services.forgejo.loadbalancer.passhostheader=true"
 
   forgejo_postgres:
-    image: postgres:14
+    image: "${FORGEJO_POSTGRES_IMAGE_TAG}"
     volumes:
       - forgejo_postgres-data:/var/lib/postgresql/data
     environment:
       PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: forgejo
-      POSTGRES_USER: forgejo
-      POSTGRES_PASSWORD: forgejo
+      POSTGRES_DB: "${FORGEJO_POSTGRES_DB}"
+      POSTGRES_USER: "${FORGEJO_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${FORGEJO_POSTGRES_PASSWORD}"
     restart: unless-stopped
     healthcheck:
-      test: "pg_isready -U ${KEYCLOAK_POSTGRES_USER} -d ${KEYCLOAK_POSTGRES_DB}"
+      test: "pg_isready -U ${FORGEJO_POSTGRES_USER} -d ${FORGEJO_POSTGRES_DB}"
       interval: 10s
       timeout: 5s
       retries: 3
