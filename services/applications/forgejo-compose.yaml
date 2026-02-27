@@ -46,15 +46,15 @@ services:
       FORGEJO__database__NAME: "${FORGEJO_POSTGRES_DB}"
       FORGEJO__database__USER: "${FORGEJO_POSTGRES_USER}"
       FORGEJO__database__PASSWD: "${FORGEJO_POSTGRES_PASSWORD}"
-#      FORGEJO__server__USE_PROXY_PROTOCOL: "true"
-#      FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}/apps/foregjo"
+      FORGEJO__server__USE_PROXY_PROTOCOL: "false"
+      FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}"
       FORGEJO__server__ROOT_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
+      FORGEJO__security__INSTALL_LOCK: "true"
     restart: always
     networks:
       - forgejo
       - traefik
 #    ports:
-#      - "3000:3000"
 #      - "222:22"
     depends_on:
       forgejo_postgres:
