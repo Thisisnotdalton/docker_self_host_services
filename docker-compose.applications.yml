@@ -1,6 +1,6 @@
 include:
   - services/applications/traefik-dashboard-compose.yaml
-  - services/applications/whoami-compose.yaml
-  - services/applications/whoami-admin-compose.yaml
-  - services/applications/vaultwarden-compose.yaml
-  - services/applications/forgejo-compose.yaml
+#  - services/applications/whoami-compose.yaml
+#  - services/applications/whoami-admin-compose.yaml
+#  - services/applications/vaultwarden-compose.yaml
+  - services/applications/forgejo/forgejo-compose.yaml

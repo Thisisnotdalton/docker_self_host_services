@@ -3,6 +3,10 @@ secrets:
     file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_cookie_secret
   forgejo_oauth_client_secret:
     file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_client_secret
+  forgejo-sso_oauth_cookie_secret:
+    file: ${OAUTH_CONFIG_DIR}/forgejo-sso/oauth_cookie_secret
+  forgejo-sso_oauth_client_secret:
+    file: ${OAUTH_CONFIG_DIR}/forgejo-sso/oauth_client_secret
 
 networks:
   forgejo:
@@ -18,7 +22,7 @@ services:
   forgejo-oauth2-proxy:
     hostname: oauth2-proxy-forgejo
     extends:
-      file: ../auth/proxy/compose.oauth2_proxy_base.yaml
+      file: ../../auth/proxy/compose.oauth2_proxy_base.yaml
       service: oauth2-proxy-base
     secrets:
       - forgejo_oauth_cookie_secret
@@ -32,12 +36,23 @@ services:
 
   forgejo:
     extends:
-      file: common.yaml
+      file: ../common.yaml
       service: application
     image: "${FORGEJO_IMAGE_TAG}"
     volumes:
       - forgejo_data:/data
       - /etc/localtime:/etc/localtime:ro
+      - ./configure_oauth.sh:/scripts/configure_oauth.sh:ro
+    secrets:
+      - forgejo-sso_oauth_client_secret
+    entrypoint: >
+      sh -c "
+        CLIENT_SECRET=$(cat /run/secrets/forgejo-sso_oauth_client_secret)
+        cp /scripts/configure_oauth.sh configure_oauth.sh;
+        chmod +x configure_oauth.sh
+        su -c './configure_oauth.sh' git
+        /usr/bin/entrypoint
+      "
     environment:
       USER_UID: 1000
       USER_GID: 1000
@@ -50,6 +65,13 @@ services:
       FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}"
       FORGEJO__server__ROOT_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
       FORGEJO__security__INSTALL_LOCK: "true"
+      FORGEJO__service__DISABLE_REGISTRATION: "true"
+      FORGEJO__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
+      FORGEJO__oauth2__ENABLED: "true"
+      OAUTH2_NAME: "${DOMAIN}"
+      OAUTH2_PROVIDER: "openidConnect"
+      OAUTH2_CLIENT_ID: "forgejo-sso-client"
+      OAUTH2_OPENID_CONNECT_AUTO_DISCOVERY_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
     restart: always
     networks:
       - forgejo
@@ -65,6 +87,12 @@ services:
       - "traefik.http.routers.forgejo.service=forgejo"
       - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
       - "traefik.http.services.forgejo.loadbalancer.passhostheader=true"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   forgejo_postgres:
     image: "${FORGEJO_POSTGRES_IMAGE_TAG}"
