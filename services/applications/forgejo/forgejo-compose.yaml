@@ -47,15 +47,13 @@ services:
       - forgejo-sso_oauth_client_secret
     entrypoint: >
       sh -c "
-        CLIENT_SECRET=$(cat /run/secrets/forgejo-sso_oauth_client_secret)
+        export CLIENT_SECRET=$(cat /run/secrets/forgejo-sso_oauth_client_secret)
         cp /scripts/configure_oauth.sh configure_oauth.sh;
         chmod +x configure_oauth.sh
         su -c './configure_oauth.sh' git
         /usr/bin/entrypoint
       "
     environment:
-      USER_UID: 1000
-      USER_GID: 1000
       FORGEJO__database__DB_TYPE: postgres
       FORGEJO__database__HOST: "forgejo_postgres:5432"
       FORGEJO__database__NAME: "${FORGEJO_POSTGRES_DB}"
@@ -65,13 +63,14 @@ services:
       FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}"
       FORGEJO__server__ROOT_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
       FORGEJO__security__INSTALL_LOCK: "true"
-      FORGEJO__service__DISABLE_REGISTRATION: "true"
+      FORGEJO__service__DISABLE_REGISTRATION: "false"
       FORGEJO__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
       FORGEJO__oauth2__ENABLED: "true"
+      FORGEJO__oauth2__ENABLE_AUTO_REGISTRATION: "true"
       OAUTH2_NAME: "${DOMAIN}"
       OAUTH2_PROVIDER: "openidConnect"
       OAUTH2_CLIENT_ID: "forgejo-sso-client"
-      OAUTH2_OPENID_CONNECT_AUTO_DISCOVERY_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}"
+      OAUTH2_OPENID_CONNECT_AUTO_DISCOVERY_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}/.well-known/openid-configuration"
     restart: always
     networks:
       - forgejo
