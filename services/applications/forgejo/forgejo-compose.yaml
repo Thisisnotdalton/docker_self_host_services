@@ -70,7 +70,7 @@ services:
       OAUTH2_PROVIDER: "openidConnect"
       OAUTH2_CLIENT_ID: "forgejo-sso-client"
       OAUTH2_OPENID_CONNECT_AUTO_DISCOVERY_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}/.well-known/openid-configuration"
-    restart: always
+    restart: unless-stopped
     networks:
       - forgejo
       - traefik

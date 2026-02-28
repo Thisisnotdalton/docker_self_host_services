@@ -21,3 +21,12 @@ environments:
 
       - name: FORGEJO_IMAGE_TAG
         value: "codeberg.org/forgejo/forgejo:14"
+
+      - name: FORGEJO_RUNNER_IMAGE_TAG
+        value: "data.forgejo.org/forgejo/runner:12"
+
+      - name: FORGEJO_RUNNER_SECRET
+        value:
+          bitwarden:
+            entry: scriptkitties-club-forgejo_runner_secret
+            field: login.password
