@@ -59,6 +59,7 @@ services:
       FORGEJO__database__PASSWD: "${FORGEJO_POSTGRES_PASSWORD}"
       FORGEJO__server__USE_PROXY_PROTOCOL: "false"
       FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}"
+      FORGEJO__server__SSH_DOMAIN: "${HOST}.${DOMAIN}"
       FORGEJO__server__ROOT_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
       FORGEJO__security__INSTALL_LOCK: "true"
       FORGEJO__service__DISABLE_REGISTRATION: "false"
