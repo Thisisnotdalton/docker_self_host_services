@@ -23,7 +23,7 @@ services:
       - forgejo_data:/data
       - /etc/localtime:/etc/localtime:ro
       - ./configure_oauth.sh:/scripts/configure_oauth.sh:ro
-      - ./configure_runner.sh:/scripts/configure_runner.sh:ro
+      - ./add_runner_to_forgejo.sh:/scripts/add_runner_to_forgejo.sh:ro
     secrets:
       - forgejo_oauth_sso_client_secret
     entrypoint: >
@@ -32,9 +32,9 @@ services:
         cp /scripts/configure_oauth.sh configure_oauth.sh;
         chmod +x configure_oauth.sh
         su -c './configure_oauth.sh' git
-        cp /scripts/configure_runner.sh configure_runner.sh;
-        chmod +x configure_runner.sh
-        su -c './configure_runner.sh' git
+        cp /scripts/add_runner_to_forgejo.sh add_runner_to_forgejo.sh;
+        chmod +x add_runner_to_forgejo.sh
+        su -c './add_runner_to_forgejo.sh' git
         /usr/bin/entrypoint
       "
     environment:
