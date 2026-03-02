@@ -23,6 +23,7 @@ services:
       - forgejo_data:/data
       - /etc/localtime:/etc/localtime:ro
       - ./configure_oauth.sh:/scripts/configure_oauth.sh:ro
+      - ./configure_runner.sh:/scripts/configure_runner.sh:ro
     secrets:
       - forgejo_oauth_sso_client_secret
     entrypoint: >
@@ -31,6 +32,9 @@ services:
         cp /scripts/configure_oauth.sh configure_oauth.sh;
         chmod +x configure_oauth.sh
         su -c './configure_oauth.sh' git
+        cp /scripts/configure_runner.sh configure_runner.sh;
+        chmod +x configure_runner.sh
+        su -c './configure_runner.sh' git
         /usr/bin/entrypoint
       "
     environment:
@@ -52,6 +56,8 @@ services:
       OAUTH2_PROVIDER: "openidConnect"
       OAUTH2_CLIENT_ID: "forgejo-sso-client"
       OAUTH2_OPENID_CONNECT_AUTO_DISCOVERY_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}/.well-known/openid-configuration"
+      FORGEJO_RUNNER_NAME: "${DOMAIN} Runner"
+      FORGEJO_RUNNER_SECRET: "${FORGEJO_RUNNER_SECRET}"
     restart: unless-stopped
     networks:
       - forgejo
