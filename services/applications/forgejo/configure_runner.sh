@@ -2,5 +2,7 @@
 set -e
 
 if [ -n "$FORGEJO_RUNNER_SECRET" ]; then
-    forgejo forgejo-cli actions register --name "${FORGEJO_RUNNER_NAME:-runner}" --secret $FORGEJO_RUNNER_SECRET
+  /bin/forgejo-runner create-runner-file --connect --secret $FORGEJO_RUNNER_SECRET --instance $FORGEJO_INSTANCE_URL
+
 fi
+while : ; do forgejo-runner daemon ; sleep 1 ; done

@@ -9,6 +9,9 @@ networks:
 services:
   docker-in-docker:
     image: docker:dind
+    depends_on:
+      forgejo:
+        condition: service_healthy
     container_name: '${HOST}.${DOMAIN}-forgejo_runner_docker_dind'
     privileged: true
     restart: 'unless-stopped'
@@ -21,12 +24,27 @@ services:
     depends_on:
       docker-in-docker:
         condition: service_started
+      forgejo:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
     container_name: '${HOST}.${DOMAIN}-forgejo_runner'
+    command:
+      - /scripts/configure_runner.sh
+#    command: >
+#      /bin/forgejo-runner create-runner-file --secret $FORGEJO_RUNNER_SECRET --instance https://${HOST}.${DOMAIN}/apps/forgejo/ > config.yml && /bin/forgejo-runner daemon -c config.yml && /bin/sh -c "while : ; do sleep 1 ; done ;"
     environment:
-      DOCKER_HOST: tcp://docker-in-docker:2375
+      DOCKER_HOST: "tcp://docker-in-docker:2375"
+      FORGEJO_RUNNER_SECRET: "${FORGEJO_RUNNER_SECRET}"
+      FORGEJO_INSTANCE_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
     volumes:
       - forgejo_runner_data:/data
+      - ./configure_runner.sh:/scripts/configure_runner.sh:ro
     restart: 'unless-stopped'
-    command: '/bin/sh -c "while : ; do sleep 1 ; done ;"'
     networks:
       - forgejo_runner
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
+      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"

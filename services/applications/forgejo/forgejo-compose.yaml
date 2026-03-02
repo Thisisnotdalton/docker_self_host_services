@@ -1,3 +1,6 @@
+include:
+  - forgejo-runner-compose.yaml
+
 secrets:
   forgejo_oauth_sso_client_secret:
     file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_sso_client_secret
