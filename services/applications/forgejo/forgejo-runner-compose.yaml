@@ -30,16 +30,15 @@ services:
         condition: service_healthy
     container_name: '${HOST}.${DOMAIN}-forgejo_runner'
     command:
-      - /scripts/configure_runner.sh
-#    command: >
-#      /bin/forgejo-runner create-runner-file --secret $FORGEJO_RUNNER_SECRET --instance https://${HOST}.${DOMAIN}/apps/forgejo/ > config.yml && /bin/forgejo-runner daemon -c config.yml && /bin/sh -c "while : ; do sleep 1 ; done ;"
+      - /scripts/launch_runner.sh
     environment:
       DOCKER_HOST: "tcp://docker-in-docker:2375"
       FORGEJO_RUNNER_SECRET: "${FORGEJO_RUNNER_SECRET}"
       FORGEJO_INSTANCE_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
     volumes:
       - forgejo_runner_data:/data
-      - ./configure_runner.sh:/scripts/configure_runner.sh:ro
+      - ./runner_config.yaml:/data/runner_config.yaml:ro
+      - ./launch_runner.sh:/scripts/launch_runner.sh:ro
     restart: 'unless-stopped'
     networks:
       - forgejo_runner
