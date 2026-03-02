@@ -23,7 +23,17 @@ resource "keycloak_openid_client" "oauth2_proxy_client" {
   }
   standard_flow_enabled = true
   valid_redirect_uris   = var.callback_urls
-  count = var.oauth_required? 1 : 0
+  count                 = var.oauth_required ? 1 : 0
+}
+
+resource "keycloak_openid_client_default_scopes" "oauth2_proxy_scopes" {
+  client_id = keycloak_openid_client.oauth2_proxy_client[0].id
+  default_scopes = [
+    "profile",
+    "groups"
+  ]
+  realm_id = var.keycloak_realm_id
+  count    = var.oauth_required? 1 : 0
 }
 
 resource "keycloak_openid_client" "sso-client" {
@@ -40,40 +50,51 @@ resource "keycloak_openid_client" "sso-client" {
   count                 = length(var.sso_client_redirect_url) > 0 ? 1 : 0
 }
 
+resource "keycloak_openid_client_default_scopes" "sso_scopes" {
+  client_id = keycloak_openid_client.sso-client[0].id
+  default_scopes = [
+    "email",
+    "profile",
+    "groups"
+  ]
+  realm_id = var.keycloak_realm_id
+  count    = length(var.sso_client_redirect_url) > 0 ? 1 : 0
+}
+
 resource "random_bytes" "cookie_secret" {
   length = 32
-  count = var.oauth_required? 1 : 0
+  count  = var.oauth_required ? 1 : 0
 }
 
 resource "local_file" "oauth_cookie_secret" {
   filename        = "${local.proxy_config_output_path}/oauth_cookie_secret"
   content_base64  = random_bytes.cookie_secret[0].base64
   file_permission = "0600"
-  count = var.oauth_required? 1 : 0
+  count           = var.oauth_required ? 1 : 0
 }
 
 resource "local_file" "oauth_application_secret" {
   filename        = "${local.proxy_config_output_path}/oauth_client_secret"
   content_base64 = base64encode(keycloak_openid_client.oauth2_proxy_client[0].client_secret)
   file_permission = "0600"
-  count = var.oauth_required? 1 : 0
+  count           = var.oauth_required ? 1 : 0
 }
 
 resource "local_file" "oauth_application_sso_secret" {
   filename        = "${local.proxy_config_output_path}/oauth_sso_client_secret"
   content_base64 = base64encode(keycloak_openid_client.sso-client[0].client_secret)
   file_permission = "0600"
-  count                 = length(var.sso_client_redirect_url) > 0 ? 1 : 0
+  count           = length(var.sso_client_redirect_url) > 0 ? 1 : 0
 }
 
 locals {
-  service_id_suffix = length(local.load_balancers) > 0? "" : "@docker"
+  service_id_suffix  = length(local.load_balancers) > 0 ? "" : "@docker"
   service_id_default = "${var.application_id}${local.service_id_suffix}"
-  service_id = length(var.service_override) > 0? var.service_override : local.service_id_default
+  service_id         = length(var.service_override) > 0 ? var.service_override : local.service_id_default
   proxy_config = templatefile(
     "${path.module}/oauth2-proxy.cfg.tftpl",
     {
-      client_id                = var.oauth_required? keycloak_openid_client.oauth2_proxy_client[0].client_id : ""
+      client_id                = var.oauth_required ? keycloak_openid_client.oauth2_proxy_client[0].client_id : ""
       oidc_issuer_url          = var.oidc_issuer_url
       application_id           = local.application_id
       redirect_url             = var.callback_urls[0]
@@ -89,13 +110,13 @@ locals {
   traefik_config = templatefile(
     "${path.module}/traefik-ingress.yml.tftpl",
     {
-      public_host    = var.cookie_domain
-      application_id = local.application_id
-      urls           = local.load_balancers
-      service_id = local.service_id
+      public_host             = var.cookie_domain
+      application_id          = local.application_id
+      urls                    = local.load_balancers
+      service_id              = local.service_id
       application_path_filter = local.application_path_filter
-      strip_path_prefix = var.strip_path_prefix
-      oauth_required = var.oauth_required
+      strip_path_prefix       = var.strip_path_prefix
+      oauth_required          = var.oauth_required
     }
   )
 }
@@ -103,7 +124,7 @@ locals {
 resource "local_file" "proxy_config" {
   filename = "${local.proxy_config_output_path}/oauth2-proxy.cfg"
   content  = local.proxy_config
-  count = var.oauth_required? 1 : 0
+  count    = var.oauth_required ? 1 : 0
 }
 
 resource "local_file" "traefik_config" {
