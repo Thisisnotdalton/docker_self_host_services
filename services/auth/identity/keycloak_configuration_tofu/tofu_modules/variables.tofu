@@ -106,6 +106,7 @@ variable "keycloak_group_roles" {
 variable "oauth2_clients" {
   type = map(object({
     mfa : optional(bool, true),
+    oauth_required: optional(bool, true),
     roles : optional(list(string), []),
     extra_redirect_urls : optional(list(string), [])
     service: optional(string, "")

@@ -1,5 +1,8 @@
 http:
+%{ if oauth_required || strip_path_prefix ~}
   middlewares:
+%{ endif ~}
+%{ if oauth_required ~}
     oauth-auth-${application_id}:
       forwardAuth:
         address: http://oauth2-proxy-${application_id}:4180/apps/${application_id}/oauth/auth
@@ -13,6 +16,7 @@ http:
           - "401-403"
         service: ${application_id}-oauth2-proxy@docker
         query: /apps/${application_id}/oauth2/sign_in?rd={url}
+%{ endif ~}
 %{ if strip_path_prefix ~}
     strip-prefix-${application_id}:
         stripPrefix:
@@ -20,6 +24,7 @@ http:
               - /apps/${application_id}
 %{ endif ~}
   routers:
+%{ if oauth_required ~}
     ${application_id}-oauth2-proxy:
       service: ${application_id}-oauth2-proxy@docker
       rule: Host(`${public_host}`)&&PathPrefix(`/apps/${application_id}/oauth/`)
@@ -30,6 +35,7 @@ http:
         - compress-traefik
         - append-slash
         - security-headers
+%{ endif ~}
     ${application_id}:
       rule: Host(`${public_host}`)&&${application_path_filter}&&!PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
@@ -40,8 +46,10 @@ http:
         - compress-traefik
         - append-slash
         - security-headers
+%{ if oauth_required ~}
         - oauth-auth-${application_id}
         - oauth-errors-${application_id}
+%{ endif ~}
 %{ if strip_path_prefix ~}
         - strip-prefix-${application_id}
 %{ endif ~}

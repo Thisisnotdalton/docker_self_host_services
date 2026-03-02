@@ -1,8 +1,4 @@
 secrets:
-  forgejo_oauth_cookie_secret:
-    file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_cookie_secret
-  forgejo_oauth_client_secret:
-    file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_client_secret
   forgejo_oauth_sso_client_secret:
     file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_sso_client_secret
 
@@ -17,20 +13,6 @@ volumes:
     name: "${HOST}.${DOMAIN}-forgejo_data"
 
 services:
-  forgejo-oauth2-proxy:
-    hostname: oauth2-proxy-forgejo
-    extends:
-      file: ../../auth/proxy/compose.oauth2_proxy_base.yaml
-      service: oauth2-proxy-base
-    secrets:
-      - forgejo_oauth_cookie_secret
-      - forgejo_oauth_client_secret
-    labels:
-      - "traefik.http.routers.forgejo-oauth2-proxy.service=forgejo-oauth2-proxy"
-      - "traefik.http.services.forgejo-oauth2-proxy.loadbalancer.server.port=4180"
-      - "traefik.http.services.forgejo-oauth2-proxy.loadbalancer.passhostheader=true"
-    volumes:
-      - "${OAUTH_CONFIG_DIR}/forgejo/oauth2-proxy.cfg:/oauth2-proxy.cfg"
 
   forgejo:
     extends:
@@ -79,7 +61,7 @@ services:
     depends_on:
       forgejo_postgres:
         condition: service_healthy
-      forgejo-oauth2-proxy:
+      keycloak:
         condition: service_healthy
     labels:
       - "traefik.http.routers.forgejo.service=forgejo"
