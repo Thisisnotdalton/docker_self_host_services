@@ -1,7 +1,7 @@
 services:
   coredns:
     image: coredns/coredns:1.14.1
-    restart: always
+    restart: unless-stopped
     environment:
       SERVER_IP: "${SERVER_IPv4}"
       SERVER_NAME: "${HOST}.${DOMAIN}"

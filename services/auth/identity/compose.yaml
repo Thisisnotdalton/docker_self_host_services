@@ -9,7 +9,7 @@ include:
   - compose.tofu_apply.yaml
 services:
   keycloak_postgres:
-    image: ${KEYCLOAK_POSTGRES_IMAGE_TAG}
+    image: ${KEYCLOAK_POSTGRES_IMAGE_TAG:-postgres:17.7}
     volumes:
       - keycloak_postgres-data:/var/lib/postgresql/data
     environment:
@@ -29,7 +29,7 @@ services:
 
   keycloak:
     hostname: keycloak
-    image: ${KEYCLOAK_IMAGE_TAG}
+    image: ${KEYCLOAK_IMAGE_TAG:-quay.io/keycloak/keycloak:26.4}
     command: start
     environment:
       KC_PROXY_HEADERS: xforwarded
