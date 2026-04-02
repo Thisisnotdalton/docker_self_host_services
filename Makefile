@@ -16,12 +16,25 @@ ifeq ($(wildcard $(COMPOSE_STAGE_FILE)),)
 $(error Missing $(COMPOSE_STAGE_FILE))
 endif
 
+# ---------- optional env file ----------
+ENV_FILE_FLAG :=
+ifneq ($(strip $(ENV_FILE)),)
+ifneq ($(wildcard $(ENV_FILE)),)
+# file exists, OK
+else
+$(error ENV_FILE "$(ENV_FILE)" does not exist)
+endif
+ENV_FILE_FLAG := --env-file "$(ENV_FILE)"
+endif
+
 # ---------- docker compose ----------
 DC_CORE = docker compose \
+  $(ENV_FILE_FLAG) \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE)
 
 DC_APPS = docker compose \
+  $(ENV_FILE_FLAG) \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE) \
   -f docker-compose.applications.yml
