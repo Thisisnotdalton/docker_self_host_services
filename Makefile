@@ -1,3 +1,4 @@
+.EXPORT_ALL_VARIABLES:
 # ---------- required environment ----------
 ifndef STAGE
 $(error STAGE environment variable is not set. Example: STAGE=dev make deploy)
@@ -20,12 +21,13 @@ endif
 STAGE_ENVS_DIR := ./stages/$(STAGE)/envs
 
 # Automatically find all .env files in that directory
-ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env)
+$(info Loading env files from $(STAGE_ENVS_DIR):)
+$(foreach f,$(ENV_FILES),$(info  - $(f)))
+
 $(info ENV_FILES = $(ENV_FILES))
 # Include them into Make
 ifneq ($(strip $(ENV_FILES)),)
 include $(ENV_FILES)
-export
 endif
 
 # ---------- optional env file ----------
@@ -34,9 +36,8 @@ SECRET_ENV_FILE := /opt/docker-secrets/docker-secrets.env
 endif
 ifneq ($(wildcard $(SECRET_ENV_FILE)),)
 include $(SECRET_ENV_FILE)
-export
 else
-$(error SECRET_ENV_FILE "$(SECRET_ENV_FILE)" does not exist)
+$(warning SECRET_ENV_FILE "$(SECRET_ENV_FILE)" not found, skipping)
 endif
 
 # ---------- docker compose ----------
