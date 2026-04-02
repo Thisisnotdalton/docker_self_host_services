@@ -16,26 +16,27 @@ ifeq ($(wildcard $(COMPOSE_STAGE_FILE)),)
 $(error Missing $(COMPOSE_STAGE_FILE))
 endif
 
-# ---------- optional env file ----------
-ifeq ($(strip $(SECRET_ENV_FILE)),)
-SECRET_ENV_FILE := /opt/docker-secrets/docker-secrets.env
-endif
-ifneq ($(wildcard $(SECRET_ENV_FILE)),)
-# file exists, OK
-else
-$(error SECRET_ENV_FILE "$(SECRET_ENV_FILE)" does not exist)
-endif
-
 # Directory containing stage-specific envs
 STAGE_ENVS_DIR := ./stages/$(STAGE)/envs
 
 # Automatically find all .env files in that directory
-ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env) $(SECRET_ENV_FILE)
+ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env)
 
 # Include them into Make
 ifneq ($(strip $(ENV_FILES)),)
 include $(ENV_FILES)
 export
+endif
+
+# ---------- optional env file ----------
+ifeq ($(strip $(SECRET_ENV_FILE)),)
+SECRET_ENV_FILE := /opt/docker-secrets/docker-secrets.env
+endif
+ifneq ($(wildcard $(SECRET_ENV_FILE)),)
+include $(SECRET_ENV_FILE)
+export
+else
+$(error SECRET_ENV_FILE "$(SECRET_ENV_FILE)" does not exist)
 endif
 
 # ---------- docker compose ----------
