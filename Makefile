@@ -20,6 +20,7 @@ endif
 # Directory containing stage-specific envs
 STAGE_ENVS_DIR := ./stages/$(STAGE)/envs
 
+ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env)
 # Automatically find all .env files in that directory
 $(info Loading env files from $(STAGE_ENVS_DIR):)
 $(foreach f,$(ENV_FILES),$(info  - $(f)))
