@@ -1,12 +1,6 @@
 environments:
   prod:
     variables:
-      - name: KEYCLOAK_POSTGRES_IMAGE_TAG
-        value: "postgres:17.7"
-
-      - name: KEYCLOAK_POSTGRES_DB
-        value: "keycloak_db"
-
       - name: KEYCLOAK_POSTGRES_USER
         value:
           bitwarden:
@@ -18,9 +12,6 @@ environments:
           bitwarden:
             entry: scriptkitties-club-keycloak_postgres_user
             field: login.password
-
-      - name: KEYCLOAK_IMAGE_TAG
-        value: "quay.io/keycloak/keycloak:26.4"
 
       - name: KEYCLOAK_ADMIN
         value:
@@ -34,17 +25,8 @@ environments:
             entry: scriptkitties-club-keycloak_admin
             field: login.password
 
-      - name: KEYCLOAK_ROUTE_PREFIX
-        value: auth
-
-      - name: KEYCLOAK_REALM
-        value: scriptkitties_club
-
       - name: tofu_state_encryption_passphrase
         value:
           bitwarden:
              entry: scriptkitties-club-tofu_state_encryption_passphrase
              field: login.password
-
-      - name: KEYCLOAK_LOG_LEVEL
-        value: WARNING

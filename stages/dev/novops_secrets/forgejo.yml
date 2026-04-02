@@ -1,12 +1,6 @@
 environments:
   dev:
     variables:
-      - name: FORGEJO_POSTGRES_IMAGE_TAG
-        value: "postgres:17.7"
-
-      - name: FORGEJO_POSTGRES_DB
-        value: "forgejo_db"
-
       - name: FORGEJO_POSTGRES_USER
         value:
           bitwarden:
@@ -18,12 +12,6 @@ environments:
           bitwarden:
             entry: scriptkitties-club-forgejo_postgres_user
             field: login.password
-
-      - name: FORGEJO_IMAGE_TAG
-        value: "codeberg.org/forgejo/forgejo:14"
-
-      - name: FORGEJO_RUNNER_IMAGE_TAG
-        value: "data.forgejo.org/forgejo/runner:12"
 
       - name: FORGEJO_RUNNER_SECRET
         value:
