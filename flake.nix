@@ -18,7 +18,7 @@
             shellHook = ''
                 : "''${STAGE:=dev}"
                 export STAGE
-                echo "Loading Novops environment for stage: ''${STAGE}"
+                echo "Loading environment for stage: ''${STAGE}"
 
                 export STAGE_DIR="stages/$STAGE/"
                 export NOVOPS_DIR="$STAGE_DIR/novops_secrets"
