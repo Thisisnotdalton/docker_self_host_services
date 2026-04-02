@@ -19,7 +19,7 @@ services:
       TF_VAR_smtp_username: ${SMTP_USERNAME}
       TF_VAR_smtp_password: ${SMTP_PASSWORD}
       TF_VAR_smtp_from_email: "keycloak@${SMTP_FROM_EMAIL_DOMAIN}"
-      TF_VAR_state_encryption_passphrase: ${tofu_state_encryption_passphrase}
+      TF_VAR_state_encryption_passphrase: ${TOFU_STATE_ENCRYPTION_PASSPHRASE}
       TF_VAR_oauth_application_base_url: "https://${HOST}.${DOMAIN}/apps"
       TF_VAR_ssl_insecure_skip_verify: "${OAUTH_SSL_INSECURE_SKIP_VERIFY:-false}"
       TF_VAR_cookie_domain: "${HOST}.${DOMAIN}"
