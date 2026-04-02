@@ -1,0 +1,14 @@
+environments:
+  prod:
+    variables:
+      - name: TRAEFIK_ACME_dns_api_secret
+        value:
+          bitwarden:
+            entry: scriptkitties-club-cloudflare_dns_secret
+            field: login.password
+
+      - name: TRAEFIK_ACME_EMAIL
+        value:
+          bitwarden:
+            entry: scriptkitties-club-acme_email
+            field: login.username
