@@ -1,0 +1,49 @@
+volumes:
+  forgejo_runner_data:
+    name: "${HOST}.${DOMAIN}-forgejo_runner_data"
+
+networks:
+  forgejo_runner:
+    external: false
+
+services:
+  docker-in-docker:
+    image: docker:dind
+    depends_on:
+      forgejo:
+        condition: service_healthy
+    container_name: '${HOST}.${DOMAIN}-forgejo_runner_docker_dind'
+    privileged: true
+    restart: 'unless-stopped'
+    command: [ 'dockerd', '-H', 'tcp://0.0.0.0:2375', '--tls=false' ]
+    networks:
+      - forgejo_runner
+
+  runner:
+    image: '${FORGEJO_RUNNER_IMAGE_TAG}'
+    depends_on:
+      docker-in-docker:
+        condition: service_started
+      forgejo:
+        condition: service_healthy
+      traefik:
+        condition: service_healthy
+    container_name: '${HOST}.${DOMAIN}-forgejo_runner'
+    command:
+      - /scripts/launch_runner.sh
+    environment:
+      DOCKER_HOST: "tcp://docker-in-docker:2375"
+      FORGEJO_RUNNER_SECRET: "${FORGEJO_RUNNER_SECRET}"
+      FORGEJO_INSTANCE_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
+    volumes:
+      - forgejo_runner_data:/data
+      - ./runner_config.yaml:/data/runner_config.yaml:ro
+      - ./launch_runner.sh:/scripts/launch_runner.sh:ro
+    restart: 'unless-stopped'
+    networks:
+      - forgejo_runner
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # Prefer traefik network for internal communication between containers, as this container is on multiple networks.
+      - "traefik.docker.network=${HOST}.${DOMAIN}-traefik"

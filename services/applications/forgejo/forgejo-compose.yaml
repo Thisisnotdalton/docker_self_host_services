@@ -1,0 +1,103 @@
+include:
+  - forgejo-runner-compose.yaml
+
+secrets:
+  forgejo_oauth_sso_client_secret:
+    file: ${OAUTH_CONFIG_DIR}/forgejo/oauth_sso_client_secret
+
+networks:
+  forgejo:
+    external: false
+
+volumes:
+  forgejo_postgres-data:
+    name: "${HOST}.${DOMAIN}-forgejo_postgres-data"
+  forgejo_data:
+    name: "${HOST}.${DOMAIN}-forgejo_data"
+
+services:
+
+  forgejo:
+    extends:
+      file: ../common.yaml
+      service: application
+    image: "${FORGEJO_IMAGE_TAG}"
+    volumes:
+      - forgejo_data:/data
+      - /etc/localtime:/etc/localtime:ro
+      - ./configure_oauth.sh:/scripts/configure_oauth.sh:ro
+      - ./add_runner_to_forgejo.sh:/scripts/add_runner_to_forgejo.sh:ro
+    secrets:
+      - forgejo_oauth_sso_client_secret
+    entrypoint: >
+      sh -c "
+        export CLIENT_SECRET=$(cat /run/secrets/forgejo_oauth_sso_client_secret)
+        cp /scripts/configure_oauth.sh configure_oauth.sh;
+        chmod +x configure_oauth.sh
+        su -c './configure_oauth.sh' git
+        cp /scripts/add_runner_to_forgejo.sh add_runner_to_forgejo.sh;
+        chmod +x add_runner_to_forgejo.sh
+        su -c './add_runner_to_forgejo.sh' git
+        /usr/bin/entrypoint
+      "
+    environment:
+      FORGEJO__database__DB_TYPE: postgres
+      FORGEJO__database__HOST: "forgejo_postgres:5432"
+      FORGEJO__database__NAME: "${FORGEJO_POSTGRES_DB}"
+      FORGEJO__database__USER: "${FORGEJO_POSTGRES_USER}"
+      FORGEJO__database__PASSWD: "${FORGEJO_POSTGRES_PASSWORD}"
+      FORGEJO__server__USE_PROXY_PROTOCOL: "false"
+      FORGEJO__server__DOMAIN: "${HOST}.${DOMAIN}"
+      FORGEJO__server__SSH_DOMAIN: "${HOST}.${DOMAIN}"
+      FORGEJO__server__ROOT_URL: "https://${HOST}.${DOMAIN}/apps/forgejo/"
+      FORGEJO__security__INSTALL_LOCK: "true"
+      FORGEJO__service__DISABLE_REGISTRATION: "false"
+      FORGEJO__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: "true"
+      FORGEJO__oauth2__ENABLED: "true"
+      FORGEJO__oauth2__ENABLE_AUTO_REGISTRATION: "true"
+      OAUTH2_NAME: "${DOMAIN}"
+      OAUTH2_PROVIDER: "openidConnect"
+      OAUTH2_CLIENT_ID: "forgejo-sso-client"
+      OAUTH2_OPENID_CONNECT_AUTO_DISCOVERY_URL: "https://${HOST}.${DOMAIN}/${KEYCLOAK_ROUTE_PREFIX}/realms/${KEYCLOAK_REALM}/.well-known/openid-configuration"
+      FORGEJO_RUNNER_NAME: "${DOMAIN} Runner"
+      FORGEJO_RUNNER_SECRET: "${FORGEJO_RUNNER_SECRET}"
+    restart: unless-stopped
+    networks:
+      - forgejo
+      - traefik
+    ports:
+      - "22:22"
+    depends_on:
+      forgejo_postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    labels:
+      - "traefik.http.routers.forgejo.service=forgejo"
+      - "traefik.http.services.forgejo.loadbalancer.server.port=3000"
+      - "traefik.http.services.forgejo.loadbalancer.passhostheader=true"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  forgejo_postgres:
+    image: "${FORGEJO_POSTGRES_IMAGE_TAG}"
+    volumes:
+      - forgejo_postgres-data:/var/lib/postgresql/data
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: "${FORGEJO_POSTGRES_DB}"
+      POSTGRES_USER: "${FORGEJO_POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${FORGEJO_POSTGRES_PASSWORD}"
+    restart: unless-stopped
+    healthcheck:
+      test: "pg_isready -U ${FORGEJO_POSTGRES_USER} -d ${FORGEJO_POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - forgejo

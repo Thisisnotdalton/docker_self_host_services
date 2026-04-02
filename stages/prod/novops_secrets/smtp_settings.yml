@@ -1,18 +1,6 @@
 environments:
-  dev:
+  prod:
     variables:
-      - name: SMTP_HOST
-        value: mail.smtp2go.com
-
-      - name: SMTP_PORT
-        value: "2525"
-
-      - name: SMTP_SECURITY
-        value: starttls
-
-      - name: SMTP_FROM_EMAIL_DOMAIN
-        value: scriptkitties.club
-
       - name: SMTP_USERNAME
         value:
           bitwarden:

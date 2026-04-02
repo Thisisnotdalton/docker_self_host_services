@@ -1,0 +1,20 @@
+environments:
+  dev:
+    variables:
+      - name: FORGEJO_POSTGRES_USER
+        value:
+          bitwarden:
+            entry: scriptkitties-club-forgejo_postgres_user
+            field: login.username
+
+      - name: FORGEJO_POSTGRES_PASSWORD
+        value:
+          bitwarden:
+            entry: scriptkitties-club-forgejo_postgres_user
+            field: login.password
+
+      - name: FORGEJO_RUNNER_SECRET
+        value:
+          bitwarden:
+            entry: scriptkitties-club-forgejo_runner_secret
+            field: login.password

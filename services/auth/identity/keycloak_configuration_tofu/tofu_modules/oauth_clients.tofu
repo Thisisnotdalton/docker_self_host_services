@@ -14,13 +14,16 @@ module "oauth_clients" {
   traefik_config_output_directory = local.traefik_config_output_directory
   oidc_issuer_url                 = local.oidc_issuer_url
   callback_urls = concat(
-    ["${var.oauth_application_base_url}/${each.key}/oauth/callback"],
-    each.value.extra_redirect_urls
+    each.value.extra_redirect_urls,
+    ["${var.oauth_application_base_url}/${each.key}/oauth/callback"]
   )
   ssl_insecure_skip_verify = var.ssl_insecure_skip_verify
   cookie_domain            = var.cookie_domain
   allowed_roles            = each.value.roles
   service_override         = each.value.service
   traefik_path_condition   = each.value.traefik_path_condition
+  strip_path_prefix        = each.value.strip_path_prefix
+  sso_client_redirect_url  = each.value.sso_client_redirect_url
+  oauth_required           = each.value.oauth_required
 }
 
