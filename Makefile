@@ -21,7 +21,7 @@ STAGE_ENVS_DIR := ./stages/$(STAGE)/envs
 
 # Automatically find all .env files in that directory
 ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env)
-
+$(info ENV_FILES = $(ENV_FILES))
 # Include them into Make
 ifneq ($(strip $(ENV_FILES)),)
 include $(ENV_FILES)
