@@ -25,25 +25,25 @@ ifneq ($(wildcard $(SECRET_ENV_FILE)),)
 else
 $(error SECRET_ENV_FILE "$(SECRET_ENV_FILE)" does not exist)
 endif
-SECRET_ENV_FILE_FLAG := --env-file "$(SECRET_ENV_FILE)"
 
 # Directory containing stage-specific envs
 STAGE_ENVS_DIR := ./stages/$(STAGE)/envs
 
 # Automatically find all .env files in that directory
-ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env)
+ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env) $(SECRET_ENV_FILE)
 
-# Construct Docker Compose flags
-ENV_FILE_FLAGS := $(foreach f,$(ENV_FILES),--env-file "$(f)") $(SECRET_ENV_FILE_FLAG)
+# Include them into Make
+ifneq ($(strip $(ENV_FILES)),)
+include $(ENV_FILES)
+export
+endif
 
 # ---------- docker compose ----------
 DC_CORE = docker compose \
-  $(ENV_FILE_FLAGS) \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE)
 
 DC_APPS = docker compose \
-  $(ENV_FILE_FLAGS) \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE) \
   -f docker-compose.applications.yml
