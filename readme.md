@@ -6,7 +6,7 @@ This is a repository to simplify the process of deploying a series of docker con
 To use this repository, follow these steps:
 
 1. Clone the repository and cd into the directory.
-2. Configure the environment variables in the novops folder. Some external API/credential requirements worth noting:
+2. Configure the environment variables and secrets in the stages folder. Some external API/credential requirements worth noting:
     * 2.1. [traefik.yml](novops/stages/prod/traefik.yml)
       * TRAEFIK_ACME_dns_api_secret: Cloudflare API key for DNS/acme challenges.
     * 2.2. [smtp_settings.yml](novops/stages/prod/smtp_settings.yml)
