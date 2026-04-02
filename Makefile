@@ -17,15 +17,15 @@ $(error Missing $(COMPOSE_STAGE_FILE))
 endif
 
 # ---------- optional env file ----------
-SECRET_ENV_FILE_FLAG :=
-ifneq ($(strip $(SECRET_ENV_FILE)),)
+ifeq ($(strip $(SECRET_ENV_FILE)),)
+SECRET_ENV_FILE := /opt/docker-secrets/docker-secrets.env
+endif
 ifneq ($(wildcard $(SECRET_ENV_FILE)),)
 # file exists, OK
 else
 $(error SECRET_ENV_FILE "$(SECRET_ENV_FILE)" does not exist)
 endif
 SECRET_ENV_FILE_FLAG := --env-file "$(SECRET_ENV_FILE)"
-endif
 
 # Directory containing stage-specific envs
 STAGE_ENVS_DIR := ./stages/$(STAGE)/envs
