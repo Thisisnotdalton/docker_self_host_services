@@ -30,6 +30,8 @@ resource "keycloak_openid_client_default_scopes" "oauth2_proxy_scopes" {
   client_id = keycloak_openid_client.oauth2_proxy_client[0].id
   default_scopes = [
     "profile",
+    "email",
+    "roles",
     "groups"
   ]
   realm_id = var.keycloak_realm_id
