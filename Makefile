@@ -1,4 +1,3 @@
-.EXPORT_ALL_VARIABLES:
 # ---------- required environment ----------
 ifndef STAGE
 $(error STAGE environment variable is not set. Example: STAGE=dev make deploy)
@@ -25,32 +24,33 @@ ENV_FILES := $(wildcard $(STAGE_ENVS_DIR)/*.env)
 $(info Loading env files from $(STAGE_ENVS_DIR):)
 $(foreach f,$(ENV_FILES),$(info  - $(f)))
 
-$(info ENV_FILES = $(ENV_FILES))
-# Include them into Make
-ifneq ($(strip $(ENV_FILES)),)
-include $(ENV_FILES)
-endif
-
 # ---------- optional env file ----------
 ifeq ($(strip $(SECRET_ENV_FILE)),)
 SECRET_ENV_FILE := /opt/docker-secrets/docker-secrets.env
 endif
 ifneq ($(wildcard $(SECRET_ENV_FILE)),)
-include $(SECRET_ENV_FILE)
+ENV_FILES := $(ENV_FILES) $(SECRET_ENV_FILE)
 else
 $(warning SECRET_ENV_FILE "$(SECRET_ENV_FILE)" not found, skipping)
 endif
 
+# Construct Docker Compose flags
+ENV_FILE_FLAGS := $(foreach f,$(ENV_FILES),--env-file "$(f)") $(SECRET_ENV_FILE_FLAG)
+
 # ---------- docker compose ----------
 DC_CORE = docker compose \
+  $(ENV_FILE_FLAGS) \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE)
 
 DC_APPS = docker compose \
+  $(ENV_FILE_FLAGS) \
   -f docker-compose.yml \
   -f $(COMPOSE_STAGE_FILE) \
   -f docker-compose.applications.yml
 
+ENV_FILES_ABS := $(abspath $(ENV_FILES))
+ENV_FILES_ABS_QUOTED := $(foreach f,$(ENV_FILES_ABS),"$(f)")
 WAIT_KEYCLOAK_SCRIPT ?= $(CURDIR)/services/auth/identity/wait_for_keycloak.sh
 
 # ---------- targets ----------
@@ -67,7 +67,7 @@ up-core: ## Phase 1: start core services (traefik/keycloak/etc.)
 wait-keycloak: ## Wait until Keycloak is reachable/ready
 	$(MAKE) up-core
 	test -f "$(WAIT_KEYCLOAK_SCRIPT)"
-	bash "$(WAIT_KEYCLOAK_SCRIPT)"
+	bash "$(WAIT_KEYCLOAK_SCRIPT)" $(ENV_FILES_ABS_QUOTED)
 
 up-apps: ## Phase 3: start services that depend on Keycloak resources
 	$(DC_APPS) up -d

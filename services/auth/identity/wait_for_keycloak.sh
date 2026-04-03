@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# --- Load env files passed as arguments ---
+for env_file in "$@"; do
+    if [ -f "$env_file" ]; then
+        echo "Loading environment from: $env_file"
+        # shellcheck disable=SC1090
+        source "$env_file"
+    else
+        echo "Warning: env file '$env_file' not found, skipping" >&2
+    fi
+done
+
 : "${HOST:?HOST environment variable is required}"
 : "${DOMAIN:?DOMAIN environment variable is required}"
 : "${KEYCLOAK_ROUTE_PREFIX:?KEYCLOAK_ROUTE_PREFIX environment variable is required}"
