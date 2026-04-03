@@ -9,7 +9,7 @@ module "oauth_clients" {
   for_each                        = var.oauth2_clients
   application_id                  = each.key
   application_servers             = each.value.extra_redirect_urls
-  keycloak_realm_id               = keycloak_realm.realm.realm
+  keycloak_realm_id               = keycloak_realm.realm.id
   proxy_config_output_directory   = local.proxy_config_output_directory
   traefik_config_output_directory = local.traefik_config_output_directory
   oidc_issuer_url                 = local.oidc_issuer_url

@@ -22,20 +22,20 @@ resource "keycloak_realm" "realm" {
 resource "keycloak_role" "realm_roles" {
   for_each    = var.keycloak_roles
   name        = each.key
-  realm_id    = keycloak_realm.realm.realm
+  realm_id    = keycloak_realm.realm.id
   description = each.value
 }
 
 resource "keycloak_group" "realm_groups" {
   for_each = var.keycloak_group_roles
   name     = each.key
-  realm_id = keycloak_realm.realm.realm
+  realm_id = keycloak_realm.realm.id
 }
 
 resource "keycloak_group_roles" "realm_group_roles" {
   for_each = var.keycloak_group_roles
   group_id = keycloak_group.realm_groups[each.key].id
-  realm_id = keycloak_realm.realm.realm
+  realm_id = keycloak_realm.realm.id
   role_ids = [
     for role_name in each.value :
     keycloak_role.realm_roles[role_name].id
@@ -43,14 +43,14 @@ resource "keycloak_group_roles" "realm_group_roles" {
 }
 
 resource "keycloak_openid_client_scope" "groups" {
-  realm_id = keycloak_realm.realm.realm
+  realm_id = keycloak_realm.realm.id
   name        = "groups"
   description = "Group membership scope"
   include_in_token_scope = true
 }
 
 resource "keycloak_openid_group_membership_protocol_mapper" "groups_mapper" {
-  realm_id        = keycloak_realm.realm.realm
+  realm_id        = keycloak_realm.realm.id
   client_scope_id = keycloak_openid_client_scope.groups.id
 
   name              = "groups"
@@ -63,7 +63,7 @@ resource "keycloak_openid_group_membership_protocol_mapper" "groups_mapper" {
 }
 
 resource "keycloak_realm_default_client_scopes" "realm_defaults" {
-  realm_id = keycloak_realm.realm.realm
+  realm_id = keycloak_realm.realm.id
 
   default_scopes = [
     "profile",
