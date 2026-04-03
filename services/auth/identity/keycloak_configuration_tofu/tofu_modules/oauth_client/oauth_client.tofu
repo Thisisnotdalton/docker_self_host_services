@@ -6,6 +6,7 @@ locals {
     url
     if url != ""
   ]
+  oauth_count = var.oauth_required ? 1 : 0
 }
 
 resource "time_rotating" "rotate" {
@@ -23,7 +24,7 @@ resource "keycloak_openid_client" "oauth2_proxy_client" {
   }
   standard_flow_enabled = true
   valid_redirect_uris   = var.callback_urls
-  count                 = var.oauth_required ? 1 : 0
+  count                 = local.oauth_count
 }
 
 resource "keycloak_openid_client_default_scopes" "oauth2_proxy_scopes" {
@@ -65,21 +66,21 @@ resource "keycloak_openid_client_default_scopes" "sso_scopes" {
 
 resource "random_bytes" "cookie_secret" {
   length = 32
-  count  = var.oauth_required ? 1 : 0
+  count  = local.oauth_count
 }
 
 resource "local_file" "oauth_cookie_secret" {
   filename        = "${local.proxy_config_output_path}/oauth_cookie_secret"
   content_base64  = random_bytes.cookie_secret[0].base64
   file_permission = "0600"
-  count           = var.oauth_required ? 1 : 0
+  count           = local.oauth_count
 }
 
 resource "local_file" "oauth_application_secret" {
   filename        = "${local.proxy_config_output_path}/oauth_client_secret"
   content_base64 = base64encode(keycloak_openid_client.oauth2_proxy_client[0].client_secret)
   file_permission = "0600"
-  count           = var.oauth_required ? 1 : 0
+  count           = local.oauth_count
 }
 
 resource "local_file" "oauth_application_sso_secret" {
@@ -126,7 +127,7 @@ locals {
 resource "local_file" "proxy_config" {
   filename = "${local.proxy_config_output_path}/oauth2-proxy.cfg"
   content  = local.proxy_config
-  count    = var.oauth_required ? 1 : 0
+  count    = local.oauth_count
 }
 
 resource "local_file" "traefik_config" {
