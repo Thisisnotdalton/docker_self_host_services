@@ -53,3 +53,4 @@ services:
     labels:
       - "traefik.tls.stores.default.defaultgeneratedcert.resolver=letsencrypt"
       - "traefik.tls.stores.default.defaultgeneratedcert.domain.main=${HOST}.${DOMAIN}"
+      - "traefik.tls.stores.default.defaultgeneratedcert.domain.sans=*.${HOST}.${DOMAIN}"
