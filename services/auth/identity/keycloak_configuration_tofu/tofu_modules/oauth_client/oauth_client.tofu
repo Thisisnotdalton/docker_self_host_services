@@ -110,10 +110,13 @@ locals {
   application_path_prefix_default = "(Path(`/apps/${var.application_id}`)||PathPrefix(`/apps/${var.application_id}/`))"
   application_path_filter = length(var.traefik_path_condition) == 0? local.application_path_prefix_default : var.traefik_path_condition
 
+  public_host_prefix = length(var.prepend_host) == 0? "": "${var.prepend_host}."
+  public_host = "${local.public_host_prefix}${var.cookie_domain}"
+
   traefik_config = templatefile(
     "${path.module}/traefik-ingress.yml.tftpl",
     {
-      public_host             = var.cookie_domain
+      public_host             = local.public_host
       application_id          = local.application_id
       urls                    = local.load_balancers
       service_id              = local.service_id

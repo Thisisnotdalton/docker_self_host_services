@@ -79,3 +79,9 @@ variable "oauth_required" {
   default = true
   description = "Whether to require auth through OAuth2 proxy for this ingress."
 }
+
+variable "prepend_host"{
+  type = string
+  default = ""
+  description = "Prepended (with a .) in front of the default public host for the Traefik ingress routes."
+}

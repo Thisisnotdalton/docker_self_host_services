@@ -111,6 +111,7 @@ variable "oauth2_clients" {
     extra_redirect_urls : optional(list(string), [])
     service: optional(string, "")
     traefik_path_condition: optional(string, "")
+    prepend_host: optional(string, "")
     strip_path_prefix: optional(bool, false)
     sso_client_redirect_url: optional(string, "")
   }))

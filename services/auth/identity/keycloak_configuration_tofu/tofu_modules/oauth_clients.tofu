@@ -25,5 +25,6 @@ module "oauth_clients" {
   strip_path_prefix        = each.value.strip_path_prefix
   sso_client_redirect_url  = each.value.sso_client_redirect_url
   oauth_required           = each.value.oauth_required
+  prepend_host             = each.value.prepend_host
 }
 
