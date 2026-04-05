@@ -37,7 +37,7 @@ http:
         - security-headers
 %{ endif ~}
     ${application_id}:
-      rule: Host(`${public_host}`)&&${application_path_filter}&&!PathPrefix(`/apps/${application_id}/oauth/`)
+      rule: Host(`${public_host}`)${application_path_filter}&&!PathPrefix(`/apps/${application_id}/oauth/`)
       tls: true
       service: ${service_id}
       entrypoints:

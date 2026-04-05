@@ -41,7 +41,7 @@ services:
     ports:
       - "9000:9000" # S3 API port
     environment:
-      RUSTFS_SERVER_DOMAINS: "${HOST}.${DOMAIN}"
+      RUSTFS_SERVER_DOMAINS: "s3.${HOST}.${DOMAIN}"
       RUSTFS_VOLUMES: "/data"
       RUSTFS_ADDRESS: "0.0.0.0:9000"
       RUSTFS_CONSOLE_ADDRESS: "0.0.0.0:9001"

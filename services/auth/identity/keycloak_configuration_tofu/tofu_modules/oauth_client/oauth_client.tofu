@@ -107,12 +107,12 @@ locals {
     }
   )
 
-  application_path_prefix_default = "(Path(`/apps/${var.application_id}`)||PathPrefix(`/apps/${var.application_id}/`))"
-  application_path_filter = length(var.traefik_path_condition) == 0? local.application_path_prefix_default : var.traefik_path_condition
-
   public_host_prefix = length(var.prepend_host) == 0? "": "${var.prepend_host}."
   public_host = "${local.public_host_prefix}${var.cookie_domain}"
-
+  application_path_prefix_default = "(Path(`/apps/${var.application_id}`)||PathPrefix(`/apps/${var.application_id}/`))"
+  traefik_path_condition_fallback = length(local.public_host_prefix) == 0? local.application_path_prefix_default : ""
+  application_path_condition = length(var.traefik_path_condition) == 0? local.traefik_path_condition_fallback: var.traefik_path_condition
+  application_path_filter = length(local.application_path_condition) == 0? "" : "&&${local.application_path_condition}"
   traefik_config = templatefile(
     "${path.module}/traefik-ingress.yml.tftpl",
     {
